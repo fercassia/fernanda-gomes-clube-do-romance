@@ -15,6 +15,7 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
 - Plataforma desenvolvimento: [Node 24](https://nodejs.org/en/download/archive/v24.10.0);
 - Linguagem: [TypeScript](https://www.typescriptlang.org/docs/);
 - Framework: [Nestjs](https://docs.nestjs.com/);
+- Ferramenta ORM: [TypeOrm](https://typeorm.io/docs/getting-started);
 - Commit semantico: [Husky](https://typicode.github.io/husky/get-started.html), [Commitlint](https://commitlint.js.org/guides/local-setup.html) e [Commitzen](https://commitizen.github.io/cz-cli/);
 - Documentação: [Swagger Nest](https://docs.nestjs.com/openapi/introduction);
 
