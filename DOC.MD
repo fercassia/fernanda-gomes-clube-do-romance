@@ -33,7 +33,9 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
   - crie o arquivo `.env` com os dados ...
 
 ## Comandos
-1. Commits padronizados: `npm run commit`
+1. Commits padronizados: `npm run commit`;
+2. Gerar imagem nova no projeto: `docker build -t clube-do-romance:{versao} .`
+3. Rodar o container da imagem pelo dockerfile: `docker run -p{porta}:{portaHost} nest-cloud-run`
 
 Divirta-se!! Projeto desenvolvido por [@fercassia](https://github.com/fercassia)💚
 
