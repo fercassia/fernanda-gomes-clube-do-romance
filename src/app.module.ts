@@ -17,7 +17,11 @@ import { LogginInterceptor } from './config/log/LogginInterceptor';
     })
     //Demais módulos aqui
   ],
-  providers: [LoggerService,
+  providers: [
+    {
+      provide: 'ILoggerService',
+      useClass: LoggerService,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: LogginInterceptor,
