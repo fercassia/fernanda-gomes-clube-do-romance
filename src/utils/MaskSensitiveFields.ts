@@ -12,6 +12,10 @@ export class MaskSensitiveFields {
     return this.processObject(data as Record<string, unknown>, seen);
   }
 
+  private static processArray(array: unknown[], seen: WeakSet<object>): unknown[] {
+    return array.map(item => this.processData(item, seen));
+  }
+
   private static processObject(obj: Record<string, unknown>, seen: WeakSet<object>): Record<string, unknown> {
     if (seen.has(obj)) return obj;
     seen.add(obj);
@@ -35,11 +39,6 @@ export class MaskSensitiveFields {
 
     return newObj;
   }
-
-  private static processArray(array: unknown[], seen: WeakSet<object>): unknown[] {
-    return array.map(item => this.processData(item, seen));
-  }
-
   private static identifySensitiveField(key: string): boolean {
     return this.SENSITIVE_FIELDS.some(sensitiveField => key.toLowerCase().includes(sensitiveField));
   }
