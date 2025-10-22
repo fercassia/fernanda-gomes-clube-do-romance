@@ -30,5 +30,3 @@ import { LogginInterceptor } from './config/log/LogginInterceptor';
   ],
 })
 export class AppModule {}
-
-//TODO: Realizar testes unitários e de integração para interceptor de logging e sanitização de dados.
