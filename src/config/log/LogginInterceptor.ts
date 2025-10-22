@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor } from '@nestjs/common';
 import { catchError, map, Observable } from 'rxjs';
-import { Sanitize } from 'src/utils/Sanitize';
+import { MaskSensitiveFields } from 'src/utils/MaskSensitiveFields';
 import type { ILoggerService } from './service/ILoggerService';
 
 @Injectable()
@@ -14,14 +14,14 @@ export class LogginInterceptor<T> implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const time = new Date().toISOString();
-        const cleanData = Sanitize.sanitizeValue(data);
+        const cleanData = MaskSensitiveFields.maskSensitiveFields(data);
 
         this.logger.log(`[SUCCESS] ${method} ${url} - ${time} - Response: ${JSON.stringify(cleanData)}`);
         return cleanData
       }),
       catchError((err) => {
         const time = new Date().toISOString();
-        const cleanError = Sanitize.sanitizeValue(err?.response || err);
+        const cleanError = MaskSensitiveFields.maskSensitiveFields(err?.response || err);
         this.logger.error(`[ERROR] ${method} ${url} - ${time} - Error: ${JSON.stringify(cleanError)}`);
         throw err;
       })
