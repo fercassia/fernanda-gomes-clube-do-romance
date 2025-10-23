@@ -2,9 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'reflect-metadata';
+import { CustomLogger } from './config/log/CustomLogger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useLogger(new CustomLogger());
 
   // Configuracao do Swagger
   const config = new DocumentBuilder()
