@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeUsersEntity } from 'src/app/users/entities/typeUsers.entity';
+import { TypeUsersEntity } from 'src/modules/users/entities/typeUsers.entity';
 import { SeederService } from './seeder.service';
 import { UsersTypeSeed } from './seeds/usersType.seed';
 
