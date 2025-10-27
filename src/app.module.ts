@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/db/typeorm.config';
 import { SeederModule } from './database/seed/seeder.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -16,7 +17,6 @@ import { SeederModule } from './database/seed/seeder.module';
     }),
     SeederModule,
   ],
-
-  //provaders
+  providers: [UsersModule],
 })
 export class AppModule {}

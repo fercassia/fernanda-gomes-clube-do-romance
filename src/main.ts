@@ -11,6 +11,10 @@ async function bootstrap() {
     .setTitle('Clube do Romance API')
     .setDescription('API para o Clube do Romance do Vale, especialmente para quem é do vale!')
     .setVersion('1.0')
+    .addGlobalResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',

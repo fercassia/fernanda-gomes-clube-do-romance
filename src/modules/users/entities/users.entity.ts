@@ -1,5 +1,5 @@
 
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn} from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne} from "typeorm"
 import { TypeUsersEntity } from "./typeUsers.entity"
 
 @Entity()
@@ -13,11 +13,8 @@ export class UsersEntity {
     @Column({length: 100, unique:true, nullable:false})
     email: string;
 
-    @OneToOne(type => TypeUsersEntity)
-    @JoinColumn([
-        { name: "role_id", referencedColumnName: "id" }
-    ])
-    @Column({default: 1, nullable:false})
+    @ManyToOne(() => TypeUsersEntity, { nullable: false })
+    @JoinColumn({ name: "role_id" })
     role: TypeUsersEntity
 
     @Column({length: 20, nullable:false})
@@ -29,6 +26,6 @@ export class UsersEntity {
     @UpdateDateColumn({name: "updated_at"})
     updatedAt: Date;
 
-    @Column({type: "boolean", default: true, nullable:false})
+    @Column({type: "boolean", default: false, nullable:false})
     isActive: boolean;
 }

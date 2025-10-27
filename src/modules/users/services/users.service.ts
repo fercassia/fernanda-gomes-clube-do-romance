@@ -1,26 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-users.dto';
-import { UpdateUserDto } from '../dto/update-users.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
+import { UsersMapper } from '../mapper/users.mapper';
+import { USERS_REPOSITORY_INTERFACE, type IUsersRepository } from '../interfaces/repository/iUsersRepository.interface';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
 
-  findAll() {
-    return `This action returns all users`;
-  }
+  constructor(@Inject(USERS_REPOSITORY_INTERFACE) private readonly usersRepository: IUsersRepository) {}
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  create(createUserDto: CreateUsersRequestDto) {
+    const user = UsersMapper.toEntity(createUserDto);
+    return this.usersRepository.create(user);
   }
 }

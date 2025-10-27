@@ -13,7 +13,7 @@ export class SeederService implements OnModuleInit {
       await this.usersTypeSeed.seedTypeUsers();
       Logger.log("Database seeding completed.");
     } catch (error) {
-      Logger.fatal("Error seeding database:", error, { timestamp: new Date().toISOString(), context: "SeederService", trace: trace() } );
+      Logger.fatal("Error seeding database:", error, { timestamp: new Date().toISOString(), trace: trace() } );
     }
   }
 }

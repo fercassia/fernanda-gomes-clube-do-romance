@@ -15,7 +15,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ["node", "dist/main.js"]
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
+      - NODE_ENV=production
+    command: ["sh", "-c", "node dist/config/db/migrations.run.js && node dist/main.js"]
 
   db:
     image: postgres:15-alpine3.21

@@ -1,34 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Res, HttpStatus } from '@nestjs/common';
+import type { Response } from 'express';
 import { UsersService } from '../services/users.service';
-import { CreateUserDto } from '../dto/create-users.dto';
-import { UpdateUserDto } from '../dto/update-users.dto';
+import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
+import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
-@Controller('users')
+@Controller('api/v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiTags('Users')
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @ApiCreatedResponse({ description: 'User created successfully.' })
+  @ApiBadRequestResponse({ description: 'Invalid user data.' })
+  @ApiBody({ type: CreateUsersRequestDto, description: 'Data required to create a new user.' })
+  create(@Body() createUserDto: CreateUsersRequestDto, @Res() res: Response) {
+    this.usersService.create(createUserDto);
+    return res.status(HttpStatus.CREATED).send();
   }
 }
