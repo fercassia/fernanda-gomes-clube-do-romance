@@ -25,7 +25,7 @@ async function bootstrap() {
     'access-token'
   ).build()
   const document = SwaggerModule.createDocument(app, config)
-  SwaggerModule.setup('clube-do-romance', app, document);
+  SwaggerModule.setup('api/docs/clube-livro', app, document);
 
   await app.listen(process.env.PORT ?? 3000);
 }

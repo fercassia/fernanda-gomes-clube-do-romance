@@ -17,7 +17,6 @@ dataSource.initialize()
   }
   await dataSource.destroy();
   Logger.log('Data Source has been destroyed!', { timestamp: new Date().toISOString() });
-  process.exit(0);  
 }).catch((error) => {
   Logger.fatal('Error during Data Source initialization', error, { timestamp: new Date().toISOString(), trace: error.stack });
   process.exit(1);

@@ -16,7 +16,7 @@ import { UsersModule } from './modules/users/users.module';
       },
     }),
     SeederModule,
+    UsersModule
   ],
-  providers: [UsersModule],
 })
 export class AppModule {}
