@@ -10,6 +10,9 @@ export class CreateUsersRequestDto {
   @IsString()
   @MaxLength(70, { message: 'Display name must be at most 70 characters long' })
   @MinLength(3, { message: 'Display name must be at least 3 characters long' })
+  @Matches(/^[a-zA-Z0-9_-]+$/, {
+    message: 'display name can only contain letters, numbers, underscores and hyphens'
+  })
   readonly displayName: string;
 
   @ApiProperty({

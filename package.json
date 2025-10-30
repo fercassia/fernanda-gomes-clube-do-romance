@@ -21,8 +21,8 @@
     "prepare": "husky install",
     "commit": "cz",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
-    "db:generate": "NAME=${NAME:-Auto} && TS=$(node -e \"console.log(Date.now())\") && npm run typeorm -- migration:generate ./src/database/migration/${NAME}_$TS -d ./src/config/db/datasource.ts",
-    "db:create": "NAME=${NAME:-Manual} && TS=$(node -e \"console.log(Date.now())\") && npm run typeorm -- migration:create ./src/database/migration/${NAME}_$TS -d ./src/config/db/datasource.ts",
+    "db:generate": "npm run typeorm -- migration:generate ./src/config/db/migrations/$NAME -d ./src/config/db/datasource.ts",
+    "db:create": "npm run typeorm -- migration:create ./src/config/db/migrations/$NAME -d ./src/config/db/datasource.ts",
     "db:run": "npm run typeorm -- migration:run -d ./src/config/db/datasource.ts",
     "db:revert": "npm run typeorm -- migration:revert -d ./src/config/db/datasource.ts",
     "db:show": "npm run typeorm -- migration:show -d ./src/config/db/datasource.ts"

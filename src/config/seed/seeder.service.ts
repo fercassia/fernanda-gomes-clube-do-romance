@@ -8,6 +8,7 @@ export class SeederService implements OnModuleInit {
   
   constructor(private readonly usersTypeSeed: UsersTypeSeed) {}
   async onModuleInit() {
+    
     try {
       Logger.log("Starting database seeding...");
       await this.usersTypeSeed.seedTypeUsers();

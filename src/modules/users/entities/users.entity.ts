@@ -1,6 +1,7 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne} from "typeorm"
 import { TypeUsersEntity } from "./typeUsers.entity"
+import { not } from "rxjs/internal/util/not";
 
 @Entity('users')
 export class UsersEntity {
@@ -13,7 +14,7 @@ export class UsersEntity {
     @Column({length: 100, unique:true, nullable:false})
     email: string;
 
-    @ManyToOne(() => TypeUsersEntity, { nullable: false })
+    @ManyToOne(() => TypeUsersEntity,  {eager: true, nullable:false})
     @JoinColumn({ name: "role_id" })
     role: TypeUsersEntity
 

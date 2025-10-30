@@ -14,8 +14,8 @@ const dataSource = new DataSource({
     ? ['dist/modules/**/entities/*.js'] 
     : ['src/modules/**/entities/*{.ts,.js}'],
   migrations: isProduction 
-    ? ['dist/database/migration/*.js'] 
-    : ['src/database/migration/*{.ts,.js}'],
+    ? ['dist/config/db/migrations/*.js'] 
+    : ['src/config/db/migrations/*{.ts,.js}'],
   synchronize: false,
   logging: true,
 });

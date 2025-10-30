@@ -7,14 +7,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from './entities/users.entity';
 import { USERS_REPOSITORY_INTERFACE } from './interfaces/repository/iUsersRepository.interface';
 import { TypeUsersEntity } from './entities/typeUsers.entity';
+import { UsersModel } from './model/users.model';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UsersEntity, TypeUsersEntity])],
   controllers: [UsersController],
-  providers: [UsersService, UsersMapper,{
+  providers: [UsersService, UsersMapper, UsersModel,{
     provide: USERS_REPOSITORY_INTERFACE,
     useClass: UsersRepository},
   ],
-  exports: [UsersService, UsersMapper],
+  exports: [UsersService, UsersMapper, UsersModel],
 })
 export class UsersModule {}

@@ -10,7 +10,7 @@ export const typeOrmConfig = async (configService: ConfigService): Promise<TypeO
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME', 'clubedoromance'),
     entities: [__dirname + '/../../modules/**/entities/*{.ts,.js}'],
-    migrations: [__dirname + '/../../database/migration/*{.ts,.js}'],
+    migrations: [__dirname + '/../migrations/*{.ts,.js}'],
     migrationsRun: false,
     autoLoadEntities: true,
     synchronize: false, // false em producao

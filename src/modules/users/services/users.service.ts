@@ -9,7 +9,9 @@ export class UsersService {
   constructor(@Inject(USERS_REPOSITORY_INTERFACE) private readonly usersRepository: IUsersRepository) {}
 
   create(createUserDto: CreateUsersRequestDto) {
-    const user = UsersMapper.toEntity(createUserDto);
+    const userToModel = UsersMapper.toModel(createUserDto)
+    const user = UsersMapper.toEntity(userToModel);
+    
     return this.usersRepository.create(user);
   }
 }
