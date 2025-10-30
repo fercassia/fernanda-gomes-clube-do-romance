@@ -3,7 +3,7 @@ import { TypeUsersEntity } from "../entities/typeUsers.entity";
 import { UsersEntity } from "../entities/users.entity";
 import { UsersModel } from "../model/users.model";
 
-export class UsersMapper {
+export class CreateUsersMapper {
   static toModel(createUserDto: CreateUsersRequestDto, roleIdDefault: number = 1) {
     return new UsersModel(createUserDto.displayName.toLocaleLowerCase().trim (), createUserDto.email.toLowerCase().trim(),
                           createUserDto.password.toLocaleLowerCase().trim(), roleIdDefault);
