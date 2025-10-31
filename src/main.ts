@@ -2,16 +2,32 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'reflect-metadata';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, HttpStatus, ValidationPipe } from '@nestjs/common';
+import { AllExceptionsFilter } from './error/AllExceptionsFilter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true
-  }));
+//Validacao de erros - parametros
+app.useGlobalPipes(new ValidationPipe({
+  whitelist: true,
+  forbidNonWhitelisted: true,
+  transform: true,
+  exceptionFactory: (errors) => {
+    const resultErrors = errors.map(er => ({
+      property: er.property,
+      errorMessage: Object.values(er.constraints || {}).join(', '),
+    }));
+    return new BadRequestException({
+      statusCode: HttpStatus.BAD_REQUEST,
+      message: 'Validation error',
+      errors: resultErrors 
+    });
+  },
+}));
+
+  // Configuracao de Excessao Global
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   // Configuracao do Swagger
   const config = new DocumentBuilder()

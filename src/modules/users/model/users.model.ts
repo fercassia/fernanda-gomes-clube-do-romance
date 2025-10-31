@@ -1,7 +1,7 @@
 import { TypeUsersEntity } from "../entities/typeUsers.entity";
 
 export class UsersModel {
-private _displayName: string;
+  private _displayName: string;
   private _email: string;
   private _role: number;
   private _password: string;
