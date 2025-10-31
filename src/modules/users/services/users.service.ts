@@ -2,28 +2,37 @@ import { ConflictException, HttpStatus, Inject, Injectable } from '@nestjs/commo
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { USERS_REPOSITORY_INTERFACE, type IUsersRepository } from '../interfaces/repository/iUsersRepository.interface';
+import { UsersModel } from '../model/users.model';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
 
+  private readonly SALT_ROUNDS = 10;
   constructor(@Inject(USERS_REPOSITORY_INTERFACE) private readonly usersRepository: IUsersRepository) {}
 
   async create(createUserDto: CreateUsersRequestDto) {
-    const userToModel = CreateUsersMapper.toModel(createUserDto);
+    const hashPassword = await bcrypt.hash(createUserDto.password, this.SALT_ROUNDS);
 
+    const userPasswordUpdated = {
+      ...createUserDto,
+      password: hashPassword
+    } as CreateUsersRequestDto;
+
+    const userToModel: UsersModel = CreateUsersMapper.toModel(userPasswordUpdated);
     const userExist = await this.usersRepository.findByEmailOrDisplayName(userToModel.displayName, userToModel.email);
-
-    if(userExist && (userToModel.displayName === userExist.displayName)){
+    
+    if(userExist && (createUserDto.displayName === userExist.displayName)){
       throw new ConflictException({status: HttpStatus.CONFLICT, 
           message: 'display name already exists.'})
     }
 
-    if(userExist && (userToModel.email === userExist.email)){
+    if(userExist && (createUserDto.email === userExist.email)){
       throw new ConflictException({status: HttpStatus.CONFLICT, 
           message: 'email already exists.'})
     }
 
     const user = CreateUsersMapper.toEntity(userToModel);
-    return this.usersRepository.create(user);
+    return await this.usersRepository.create(user);
   } 
 }

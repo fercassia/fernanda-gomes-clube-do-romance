@@ -20,7 +20,7 @@ export class UsersEntity {
     @JoinColumn({ name: "role_id" })
     role: TypeUsersEntity
 
-    @Column({length: 20, nullable:false})
+    @Column({length: 70, nullable:false})
     password: string;
 
     @CreateDateColumn({name: "created_at"})

@@ -10,10 +10,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiTags('Users')
-  @Post()
   @ApiCreatedResponse({ description: 'User created successfully.' })
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
   @ApiBody({ type: CreateUsersRequestDto, description: 'Data required to create a new user.' })
+  @Post('register')
   async create(@Body() createUserDto: CreateUsersRequestDto, @Res() res: Response) {
     await this.usersService.create(createUserDto);
     return res.status(HttpStatus.CREATED).send();

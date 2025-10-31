@@ -1,5 +1,3 @@
-import { TypeUsersEntity } from "../entities/typeUsers.entity";
-
 export class UsersModel {
   private _displayName: string;
   private _email: string;
