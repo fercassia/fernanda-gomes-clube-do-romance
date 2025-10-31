@@ -14,8 +14,8 @@ export class UsersController {
   @ApiCreatedResponse({ description: 'User created successfully.' })
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
   @ApiBody({ type: CreateUsersRequestDto, description: 'Data required to create a new user.' })
-  create(@Body() createUserDto: CreateUsersRequestDto, @Res() res: Response) {
-    this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUsersRequestDto, @Res() res: Response) {
+    await this.usersService.create(createUserDto);
     return res.status(HttpStatus.CREATED).send();
   }
 }

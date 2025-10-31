@@ -8,6 +8,23 @@ import { Inject, Injectable } from "@nestjs/common";
 export class UsersRepository implements IUsersRepository{
   constructor(@InjectRepository(UsersEntity) private readonly entity: Repository<UsersEntity>){}
 
+  async findByEmailOrDisplayName(displayName: string, email: string):  Promise<UsersEntity | null> {
+    return await this.entity.findOne({
+        where: [
+          { email: email },
+          { displayName: displayName }
+        ]
+    });
+  };
+
+  async findOneByEmail (email: string): Promise<UsersEntity | null>{
+    return await this.entity.findOneBy({email: email});
+  }
+  
+  async findOneByDisplayName(displayName: string): Promise<UsersEntity | null>{
+    return await this.entity.findOneBy({displayName: displayName});
+  }
+
   async create(user: UsersEntity): Promise<UsersEntity> {
     return await this.entity.save(user);
   }

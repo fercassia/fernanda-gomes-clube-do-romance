@@ -1,9 +1,11 @@
 
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne} from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne, Index} from "typeorm"
 import { TypeUsersEntity } from "./typeUsers.entity"
-import { not } from "rxjs/internal/util/not";
 
 @Entity('users')
+@Index(['email'], { unique: true })
+@Index(['displayName'], { unique: true })
+@Index(['id','createdAt'])
 export class UsersEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
