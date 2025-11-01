@@ -18,18 +18,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-    const errorText = exception instanceof HttpException ? exception.getResponse() : null;
-
-    const messageCause: string = (errorText as any)?.message || this.INTERNAL_SERVER_ERROR;
-    const messageError: string = (errorText as any)?.error || this.INTERNAL_SERVER_ERROR;
+    const errorText = exception instanceof HttpException ? exception.getResponse() : this.INTERNAL_SERVER_ERROR;
 
     Logger.error('Exception caught', exception instanceof Error ? exception.stack : '');
 
     response.status(status).json({
-      statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      cause: { message: messageCause, error: messageError },
+      cause: { status, errorText },
     });
   }
 }

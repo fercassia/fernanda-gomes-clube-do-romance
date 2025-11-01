@@ -1,4 +1,4 @@
-import { ConflictException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { USERS_REPOSITORY_INTERFACE, type IUsersRepository } from '../interfaces/repository/iUsersRepository.interface';
@@ -14,6 +14,7 @@ export class UsersService {
   constructor(@Inject(USERS_REPOSITORY_INTERFACE) private readonly usersRepository: IUsersRepository) {}
 
   async create(createUserDto: CreateUsersRequestDto): Promise<CreateUsersResponseDto> {
+
     const hashPassword = await bcrypt.hash(createUserDto.password, this.SALT_ROUNDS);
 
     const userPasswordUpdated = {
