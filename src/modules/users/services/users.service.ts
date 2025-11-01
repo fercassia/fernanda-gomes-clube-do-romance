@@ -4,6 +4,8 @@ import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { USERS_REPOSITORY_INTERFACE, type IUsersRepository } from '../interfaces/repository/iUsersRepository.interface';
 import { UsersModel } from '../model/users.model';
 import * as bcrypt from 'bcrypt';
+import { UsersEntity } from '../entities/users.entity';
+import { CreateUsersResponseDto } from '../dto/createUserResponse.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,7 +13,7 @@ export class UsersService {
   private readonly SALT_ROUNDS = 10;
   constructor(@Inject(USERS_REPOSITORY_INTERFACE) private readonly usersRepository: IUsersRepository) {}
 
-  async create(createUserDto: CreateUsersRequestDto) {
+  async create(createUserDto: CreateUsersRequestDto): Promise<CreateUsersResponseDto> {
     const hashPassword = await bcrypt.hash(createUserDto.password, this.SALT_ROUNDS);
 
     const userPasswordUpdated = {
@@ -20,13 +22,14 @@ export class UsersService {
     } as CreateUsersRequestDto;
 
     const userToModel: UsersModel = CreateUsersMapper.toModel(userPasswordUpdated);
-    const userExist = await this.usersRepository.findByEmailOrDisplayName(userToModel.displayName, userToModel.email);
+    const userExist: UsersEntity | null = await this.usersRepository.findByEmailOrDisplayName(userToModel.displayName, userToModel.email);
     
     if(userExist){
       throw new ConflictException('User with given email or display name already exists.')
     }
 
-    const user = CreateUsersMapper.toEntity(userToModel);
-    return await this.usersRepository.create(user);
-  } 
+    const user: UsersEntity = CreateUsersMapper.toEntity(userToModel);
+    const createdUser: UsersEntity = await this.usersRepository.create(user);
+    return CreateUsersMapper.toResponse(createdUser);
+  }
 }
