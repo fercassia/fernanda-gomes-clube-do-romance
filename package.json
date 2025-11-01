@@ -79,7 +79,10 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "roots": [
+      "src",
+      "e2e"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -87,8 +90,10 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+  "collectCoverageFrom": [ "src/**/*.{js,jsx,ts,tsx}" ],
+  "coverageDirectory": "../coverage",
+  "coverageReporters": ["lcov", "text"],
+  "testEnvironment": "node"
   },
   "config": {
     "commitizen": {
