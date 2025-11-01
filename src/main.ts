@@ -19,7 +19,6 @@ app.useGlobalPipes(new ValidationPipe({
       errorMessage: Object.values(er.constraints || {}).join(', '),
     }));
     return new BadRequestException({
-      statusCode: HttpStatus.BAD_REQUEST,
       message: 'Validation error',
       errors: resultErrors 
     });

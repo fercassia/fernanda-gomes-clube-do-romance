@@ -3,9 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { TypeUsersEntity } from "./typeUsers.entity"
 
 @Entity('users')
-@Index(['email'], { unique: true })
-@Index(['displayName'], { unique: true })
-@Index(['id','createdAt'])
+@Index(['id', 'createdAt'])
 export class UsersEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;

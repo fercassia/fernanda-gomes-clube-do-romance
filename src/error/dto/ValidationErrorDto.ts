@@ -13,5 +13,5 @@ export class ValidationErrorDto {
       { property: 'email', errorMessage: 'email must be an email' },
     ]
   })
-  errors: { property: string; errorMessage: string }[];
+  errors?: { property: string; errorMessage: string }[];
 }

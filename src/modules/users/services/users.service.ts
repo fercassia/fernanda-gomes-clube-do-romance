@@ -22,14 +22,8 @@ export class UsersService {
     const userToModel: UsersModel = CreateUsersMapper.toModel(userPasswordUpdated);
     const userExist = await this.usersRepository.findByEmailOrDisplayName(userToModel.displayName, userToModel.email);
     
-    if(userExist && (createUserDto.displayName === userExist.displayName)){
-      throw new ConflictException({status: HttpStatus.CONFLICT, 
-          message: 'display name already exists.'})
-    }
-
-    if(userExist && (createUserDto.email === userExist.email)){
-      throw new ConflictException({status: HttpStatus.CONFLICT, 
-          message: 'email already exists.'})
+    if(userExist){
+      throw new ConflictException('User with given email or display name already exists.')
     }
 
     const user = CreateUsersMapper.toEntity(userToModel);

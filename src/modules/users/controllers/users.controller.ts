@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpCode, Res, HttpStatus } from '@nestjs/commo
 import type { Response } from 'express';
 import { UsersService } from '../services/users.service';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
-import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationErrorDto } from '../../../error/dto/ValidationErrorDto';
 
 @Controller('api/v1/users')
@@ -12,6 +12,7 @@ export class UsersController {
   @ApiTags('Users')
   @ApiCreatedResponse({ description: 'User created successfully.' })
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
+  @ApiConflictResponse({ description: 'User with given email or display name already exists.', type: ValidationErrorDto })
   @ApiBody({ type: CreateUsersRequestDto, description: 'Data required to create a new user.' })
   @Post('register')
   async create(@Body() createUserDto: CreateUsersRequestDto, @Res() res: Response) {
