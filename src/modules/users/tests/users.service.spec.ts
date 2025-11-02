@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
 import { ConflictException } from '@nestjs/common';
+import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashedPassword'),
@@ -55,7 +56,7 @@ describe('UsersService', () => {
       displayName: 'bananaUser',
       password: 'hashedPassword',
     });
-    await expect(service.create(dtoCreateUser1)).rejects.toThrow(ConflictException);
+    await expect(service.create(CreateUsersMapper.toModel(dtoCreateUser1))).rejects.toThrow(ConflictException);
     expect(mockUsersRepository.create).not.toHaveBeenCalled();
   });
 
@@ -72,7 +73,7 @@ describe('UsersService', () => {
       displayName: dtoCreateUser1.displayName,
       password: 'hashedPassword',
     });
-    await expect(service.create(dtoCreateUser1)).rejects.toThrow(ConflictException);
+    await expect(service.create(CreateUsersMapper.toModel(dtoCreateUser1))).rejects.toThrow(ConflictException);
     expect(mockUsersRepository.create).not.toHaveBeenCalled();
   });
 
@@ -99,7 +100,9 @@ describe('UsersService', () => {
 
     mockUsersRepository.create.mockResolvedValueOnce(createUserEntity);
 
-    await expect(service.create(dtoCreateUser1)).resolves.toEqual({
+    const userModel = await CreateUsersMapper.toModel(dtoCreateUser1);
+
+    await expect(service.create(userModel)).resolves.toEqual({
       id: 'newUserId',
       displayName: dtoCreateUser1.displayName,
       email: dtoCreateUser1.email,
