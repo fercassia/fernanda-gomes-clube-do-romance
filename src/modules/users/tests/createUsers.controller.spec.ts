@@ -148,7 +148,7 @@ describe('UsersController - Create Users Controller', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
@@ -157,7 +157,7 @@ describe('UsersController - Create Users Controller', () => {
     expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
 
-  it('should return 400 when password does not contain a especial character', async () => {
+  it('should return 400 when password does not contain a special character', async () => {
     const createUserDto = {
       displayName: 'testuser',
       email: 'testuser@example.com',
@@ -178,7 +178,7 @@ describe('UsersController - Create Users Controller', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
@@ -208,7 +208,7 @@ describe('UsersController - Create Users Controller', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
@@ -238,7 +238,7 @@ describe('UsersController - Create Users Controller', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
@@ -268,7 +268,7 @@ describe('UsersController - Create Users Controller', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
