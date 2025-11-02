@@ -5,6 +5,7 @@ import { UsersModel } from '../model/users.model';
 import { UsersEntity } from '../entities/users.entity';
 import { CreateUsersResponseDto } from '../dto/createUserResponse.dto';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
+import { Metadata } from '../../../utils/metaData';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +21,7 @@ export class UsersService {
     const userExist: UsersEntity | null = await this.usersRepository.findByEmailOrDisplayName(userModel.displayName, userModel.email);
     
     if(userExist){
-      Logger.warn(`${HttpStatus.CONFLICT} - ${userModel.email} or ${userModel.displayName} already exists.`, 'UsersService.create', { timestamp: new Date().toISOString() });
+      Logger.warn(`${HttpStatus.CONFLICT} - ${userModel.email} or ${userModel.displayName} already exists.`, Metadata.create({serviceMethod: 'UsersService.create'}));
       throw new ConflictException('User with given email or display name already exists.')
     }
 
