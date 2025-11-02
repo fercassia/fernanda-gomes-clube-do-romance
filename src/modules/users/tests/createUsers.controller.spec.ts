@@ -7,7 +7,7 @@ import request from 'supertest';
 import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
 
 //INICIO CREATE USERS
-describe('UsersController', () => {
+describe('UsersController - Create Users Controller', () => {
   let app: INestApplication;
   let controller: UsersController;
   let service: UsersService;
