@@ -23,7 +23,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
     Logger.error('Exception caught', exception instanceof Error ? exception.stack : '');
 
     response.status(status).json({
-      timestamp: new Date().toISOString(),
       path: request.url,
       cause: { status, errorText },
     });

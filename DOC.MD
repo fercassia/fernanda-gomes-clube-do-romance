@@ -18,7 +18,8 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
 - Ferramenta ORM: [TypeOrm](https://typeorm.io/docs/getting-started);
 - Commit semantico: [Husky](https://typicode.github.io/husky/get-started.html), [Commitlint](https://commitlint.js.org/guides/local-setup.html) e [Commitzen](https://commitizen.github.io/cz-cli/);
 - Documentação: [Swagger Nest](https://docs.nestjs.com/openapi/introduction);
-- Banco de Dados: [PostegreSQL](https://www.postgresql.org/docs/)
+- Banco de Dados: [PostegreSQL](https://www.postgresql.org/docs/);
+- Testes unitários: [Jest](https://jestjs.io/) e [Jest Extensão VSC](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest)
 
 ## 📃 Pré-requisitos
 
@@ -49,7 +50,8 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
 3. Rodar o container da imagem pelo dockerfile: `docker run -p{porta}:{portaHost} clube-do-romance:{versao}`;
 4. Rodar rodar os containers do projeto e da base de dados: `docker-compose up -d --build`;
 5. Rodar rodar os logs dos containers: `docker logs -f {nomeDoContainer ou  idContainer}`;
-6. Gerar files de migration: `NAME=<NomeDaMigration> npm run db:generate`
+6. Gerar files de migration: `NAME=<NomeDaMigration> npm run db:generate`;
+7. Visalizar porcentagem de cobertura e rodar os testes unitários: `npm run test:cov`
 
 
 ## 💡 Dica rápida: 

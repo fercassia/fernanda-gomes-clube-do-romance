@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { USERS_REPOSITORY_INTERFACE, type IUsersRepository } from '../interfaces/repository/iUsersRepository.interface';
@@ -6,6 +6,7 @@ import { UsersModel } from '../model/users.model';
 import * as bcrypt from 'bcrypt';
 import { UsersEntity } from '../entities/users.entity';
 import { CreateUsersResponseDto } from '../dto/createUserResponse.dto';
+import { trace } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +27,7 @@ export class UsersService {
     const userExist: UsersEntity | null = await this.usersRepository.findByEmailOrDisplayName(userToModel.displayName, userToModel.email);
     
     if(userExist){
+      Logger.warn(`${HttpStatus.CONFLICT} - ${userToModel.email} or ${userToModel.displayName} already exists.`, 'UsersService.create', {trace: true});
       throw new ConflictException('User with given email or display name already exists.')
     }
 
