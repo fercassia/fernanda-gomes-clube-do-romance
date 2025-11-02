@@ -1,7 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { DataSource, In } from "typeorm";
 import { UsersTypeSeed } from "./seeds/usersType.seed";
-import { trace } from "console";
 
 @Injectable()
 export class SeederService implements OnModuleInit { 
@@ -14,7 +12,7 @@ export class SeederService implements OnModuleInit {
       await this.usersTypeSeed.seedTypeUsers();
       Logger.log("Database seeding completed.");
     } catch (error) {
-      Logger.fatal("Error seeding database:", error, { timestamp: new Date().toISOString(), trace: trace() } );
+      Logger.fatal("Error seeding database:", error, { timestamp: new Date().toISOString()} );
     }
   }
 }

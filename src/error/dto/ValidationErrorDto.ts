@@ -1,4 +1,4 @@
-import { ApiResponse, ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 // DTO de exemplo para erro
 export class ValidationErrorDto {

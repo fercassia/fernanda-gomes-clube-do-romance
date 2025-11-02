@@ -157,7 +157,7 @@ describe('UsersController', () => {
     expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
 
-  it('should return 400 when password does not contain a especial character', async () => {
+  it('should return 400 when password does not contain a special character', async () => {
     const createUserDto = {
       displayName: 'testuser',
       email: 'testuser@example.com',
