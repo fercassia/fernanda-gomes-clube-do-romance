@@ -95,7 +95,7 @@ describe('UsersService', () => {
       createdAt: dateCreated,
       updatedAt: dateCreated,
       isActive: false
-    }
+    };
 
     mockUsersRepository.create.mockResolvedValueOnce(createUserEntity);
 

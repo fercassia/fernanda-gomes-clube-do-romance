@@ -148,7 +148,7 @@ describe('UsersController', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
@@ -178,7 +178,7 @@ describe('UsersController', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
@@ -208,7 +208,7 @@ describe('UsersController', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
@@ -238,7 +238,7 @@ describe('UsersController', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }
@@ -268,7 +268,7 @@ describe('UsersController', () => {
           errors: [
             {
               property: 'password',
-               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*?&)'
+               errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
             }
           ]
         }

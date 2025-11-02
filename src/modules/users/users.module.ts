@@ -12,9 +12,10 @@ import { UsersModel } from './model/users.model';
 @Module({
   imports: [TypeOrmModule.forFeature([UsersEntity, TypeUsersEntity])],
   controllers: [UsersController],
-  providers: [UsersService, CreateUsersMapper, UsersModel,{
+  providers: [UsersService, CreateUsersMapper, UsersModel, {
     provide: USERS_REPOSITORY_INTERFACE,
-    useClass: UsersRepository},
+    useClass: UsersRepository
+    },
   ],
   exports: [UsersService, CreateUsersMapper, UsersModel],
 })
