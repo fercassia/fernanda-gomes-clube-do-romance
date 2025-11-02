@@ -8,6 +8,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { Metadata } from '../utils/metaData';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -20,7 +21,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
     const errorText = exception instanceof HttpException ? exception.getResponse() : this.INTERNAL_SERVER_ERROR;
 
-    Logger.error('Exception caught', exception instanceof Error ? exception.stack : '');
+    Logger.error('Exception caught', exception instanceof Error ? Metadata.create() : '');
 
     response.status(status).json({
       path: request.url,

@@ -1,6 +1,6 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, JoinColumn, ManyToOne, Index} from "typeorm"
-import { TypeUsersEntity } from "./typeUsers.entity"
+import { RolesEntity } from "./roles.entity"
 
 @Entity('users')
 @Index(['id', 'createdAt'])
@@ -14,9 +14,9 @@ export class UsersEntity {
     @Column({length: 100, unique:true, nullable:false})
     email: string;
 
-    @ManyToOne(() => TypeUsersEntity,  {eager: true, nullable:false})
+    @ManyToOne(() => RolesEntity,  {eager: true, nullable:false})
     @JoinColumn({ name: "role_id" })
-    role: TypeUsersEntity
+    role: RolesEntity
 
     @Column({length: 70, nullable:false})
     password: string;

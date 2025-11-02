@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../services/users.service';
-import * as bcrypt from 'bcrypt';
 import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
 import { ConflictException } from '@nestjs/common';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { UsersModel } from '../model/users.model';
+import { PasswordHasherd } from '../../../utils/passwordHashed';
+import { UsersEntity } from '../entities/users.entity';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashedPassword'),
@@ -19,8 +20,10 @@ describe('UsersService', () => {
     create: jest.fn(),
   };
 
+  const passwordHasherMock = {
+      hash: jest.fn().mockResolvedValue('hashedPassword'),
+  };
   beforeEach(async () => {
-    (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -29,6 +32,10 @@ describe('UsersService', () => {
           provide: USERS_REPOSITORY_INTERFACE,
           useValue: mockUsersRepository,
         },
+        {
+         provide: PasswordHasherd,
+         useValue: passwordHasherMock,
+       },
       ],
     }).compile();
 
@@ -85,23 +92,28 @@ describe('UsersService', () => {
       password: 'Password!@#344',
     };
 
+    const senha = await passwordHasherMock.hash(dtoCreateUser1.password);
+    const dtoNovoUserComSenhaHash = {
+      ...dtoCreateUser1,
+      password: senha,
+    };
+    const userModel: UsersModel = CreateUsersMapper.toModel(dtoNovoUserComSenhaHash);
+
     mockUsersRepository.findByEmailOrDisplayName.mockResolvedValueOnce(null);
 
     const dateCreated = new Date(); 
     const createUserEntity = {
       id: 'newUserId',
-      displayName: dtoCreateUser1.displayName,
-      email: dtoCreateUser1.email,
-      role: { id: 1 },
-      password: 'hashedPassword',
+      displayName: userModel.displayName,
+      email: userModel.email,
+      role: { id: userModel.role },
+      password: userModel.password,
       createdAt: dateCreated,
       updatedAt: dateCreated,
       isActive: false
-    };
+    } as UsersEntity;
 
     mockUsersRepository.create.mockResolvedValueOnce(createUserEntity);
-
-    const userModel: UsersModel= await CreateUsersMapper.toModel(dtoCreateUser1);
 
     await expect(service.create(userModel)).resolves.toEqual({
       id: 'newUserId',
@@ -110,11 +122,13 @@ describe('UsersService', () => {
       createdAt: dateCreated.toString(),
     });
 
+    expect(passwordHasherMock.hash).toHaveBeenCalledWith(dtoCreateUser1.password);
+    expect(mockUsersRepository.findByEmailOrDisplayName).toHaveBeenCalledWith(userModel.displayName, userModel.email);
     expect(mockUsersRepository.create).toHaveBeenCalledWith(expect.objectContaining({
-      displayName: dtoCreateUser1.displayName,
-      email: dtoCreateUser1.email,
-      password: 'hashedPassword',
-      role: { id: 1 },
+        displayName: userModel.displayName,
+        email: userModel.email,
+        role: { id: 1 },
+        password: userModel.password,
     }));
   });
 });
