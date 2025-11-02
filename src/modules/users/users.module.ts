@@ -6,11 +6,12 @@ import { CreateUsersMapper } from './mapper/createUsers.mapper';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from './entities/users.entity';
 import { USERS_REPOSITORY_INTERFACE } from './interfaces/repository/iUsersRepository.interface';
-import { TypeUsersEntity } from './entities/typeUsers.entity';
+import { RolesEntity } from './entities/roles.entity';
 import { UsersModel } from './model/users.model';
+import { UtilsModule } from '../../utils/utils.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UsersEntity, TypeUsersEntity])],
+  imports: [TypeOrmModule.forFeature([UsersEntity, RolesEntity]), UtilsModule],
   controllers: [UsersController],
   providers: [UsersService, CreateUsersMapper, UsersModel, {
     provide: USERS_REPOSITORY_INTERFACE,

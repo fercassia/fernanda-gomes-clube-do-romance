@@ -5,12 +5,14 @@ import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepos
 import { BadRequestException, HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
+import { PasswordHasherd } from '../../../utils/passwordHashed';
 
 //INICIO CREATE USERS
-describe('UsersController', () => {
+describe('UsersController - create users', () => {
   let app: INestApplication;
   let controller: UsersController;
   let service: UsersService;
+  let passwordHasher: PasswordHasherd;
 
   const BASE_URL: string = '/api/v1/users';
 

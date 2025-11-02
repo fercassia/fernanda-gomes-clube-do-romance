@@ -1,8 +1,6 @@
 import { Logger } from "@nestjs/common";
 import dataSource from "./datasource";
 
-
-
 dataSource.initialize()
 .then( async () => {
   Logger.log('Data Source has been initialized!', { timestamp: new Date().toISOString() });

@@ -1,6 +1,6 @@
 import { CreateUsersResponseDto } from "../dto/createUserResponse.dto";
 import { CreateUsersRequestDto } from "../dto/createUsersRequest.dto";
-import { TypeUsersEntity } from "../entities/typeUsers.entity";
+import { RolesEntity } from "../entities/roles.entity";
 import { UsersEntity } from "../entities/users.entity";
 import { UsersModel } from "../model/users.model";
 
@@ -13,7 +13,7 @@ export class CreateUsersMapper {
     user.displayName = userModel.displayName;
     user.email = userModel.email;
     user.password = userModel.password;
-    user.role = { id: userModel.role } as TypeUsersEntity
+    user.role = { id: userModel.role } as RolesEntity;
     return user;
   }
 
