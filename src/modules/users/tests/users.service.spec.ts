@@ -5,6 +5,7 @@ import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepos
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
 import { ConflictException } from '@nestjs/common';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
+import { UsersModel } from '../model/users.model';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashedPassword'),
@@ -100,7 +101,7 @@ describe('UsersService', () => {
 
     mockUsersRepository.create.mockResolvedValueOnce(createUserEntity);
 
-    const userModel = await CreateUsersMapper.toModel(dtoCreateUser1);
+    const userModel: UsersModel= await CreateUsersMapper.toModel(dtoCreateUser1);
 
     await expect(service.create(userModel)).resolves.toEqual({
       id: 'newUserId',
