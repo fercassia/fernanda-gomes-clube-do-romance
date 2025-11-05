@@ -9,9 +9,12 @@ export const typeOrmConfig = async (configService: ConfigService): Promise<TypeO
     username: configService.get<string>('DB_USER'),
     password: configService.get<string>('DB_PASSWORD'),
     database: configService.get<string>('DB_NAME', 'clubedoromance'),
-    entities: [__dirname + '/../entity/*.entity{.ts,.js}'],
-    migrations: [__dirname + '/../migration/*{.ts,.js}'],
+    entities: [__dirname + '/../../modules/**/entities/*{.ts,.js}'],
+    migrations: [__dirname + '/../migrations/*{.ts,.js}'],
+    migrationsRun: false,
+    autoLoadEntities: true,
     synchronize: false, // false em producao
     retryAttempts: 10, // tentativas de reconexão
     retryDelay: 5000,  // tempo entre tentativas
+    logging: true,
 });

@@ -2,6 +2,8 @@
 
 > **Objetivo:** um projeto **backend** simples (em camadas) para praticar **TypeScript, Express, SQL, Docker, Autenticação JWT** e **integração com API externa** — com escopo pensado para **nível júnior**.
 
+> __Documentação do projeto__: [Doc Clube do Romance](./DOC.MD)
+
 ---
 
 ## 🧭 Meta do Projeto
