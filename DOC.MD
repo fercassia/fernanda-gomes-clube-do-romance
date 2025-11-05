@@ -42,6 +42,7 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
       DB_PASSWORD=<password>
       DB_NAME=clubedoromance
       ENVIRONMENT=production
+      HASH_COST=10
       ```
 
 ## Comandos

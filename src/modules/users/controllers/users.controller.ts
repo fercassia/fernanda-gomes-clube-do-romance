@@ -20,7 +20,7 @@ export class UsersController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUsersRequestDto): Promise<CreateUserResponseWrapperDto> {
-    const createdUser: UsersModel = await CreateUsersMapper.toModel(createUserDto);
+    const createdUser: UsersModel = CreateUsersMapper.toModel(createUserDto);
     const user: CreateUsersResponseDto = await this.usersService.create(createdUser);
     return {
       message: 'User created successfully.',
