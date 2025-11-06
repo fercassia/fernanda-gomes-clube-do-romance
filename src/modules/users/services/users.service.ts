@@ -21,7 +21,7 @@ export class UsersService {
     const userExist: UsersEntity | null = await this.usersRepository.findByEmailOrDisplayName(userModel.displayName, userModel.email);
     
     if(userExist){
-      Logger.warn(`${HttpStatus.CONFLICT} - ${userModel.email} or ${userModel.displayName} already exists.`, Metadata.create({serviceMethod: 'UsersService.create'}));
+      Logger.warn(`${HttpStatus.CONFLICT} - (${userModel.email} - ${userExist.email}) or (${userModel.displayName} - ${userExist.displayName}) are equal.`, Metadata.create({serviceMethod: 'UsersService.create'}));
       throw new ConflictException('User with given email or display name already exists.')
     }
 
