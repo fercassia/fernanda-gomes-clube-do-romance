@@ -3,6 +3,7 @@ import { UsersEntity } from "../entities/users.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
+import { UUID } from "crypto";
 
 @Injectable()
 export class UsersRepository implements IUsersRepository{
@@ -23,6 +24,10 @@ export class UsersRepository implements IUsersRepository{
   
   findOneByDisplayName(displayName: string): Promise<UsersEntity | null>{
     return this.entity.findOneBy({displayName: displayName});
+  }
+
+  findById(id: string): Promise<UsersEntity | null> {
+    return this.entity.findOneBy({ id: id });
   }
 
   create(user: UsersEntity): Promise<UsersEntity> {

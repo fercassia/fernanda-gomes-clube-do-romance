@@ -1,4 +1,4 @@
-import { CreateUsersResponseDto } from "../dto/createUserResponse.dto";
+import { CreateUsersResponseDto } from "../dto/createUsersResponse.dto";
 import { CreateUsersRequestDto } from "../dto/createUsersRequest.dto";
 import { RolesEntity } from "../entities/roles.entity";
 import { UsersEntity } from "../entities/users.entity";
