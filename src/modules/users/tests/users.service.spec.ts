@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../services/users.service';
 import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, Logger } from '@nestjs/common';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { UsersModel } from '../model/users.model';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
@@ -13,6 +13,7 @@ jest.mock('bcrypt', () => ({
 }));
 
 describe('UsersService', () => {
+
   let service: UsersService;
 
   const mockUsersRepository = {
@@ -23,6 +24,10 @@ describe('UsersService', () => {
   const passwordHasherMock = {
       hash: jest.fn().mockResolvedValue('hashedPassword'),
   };
+
+  beforeAll(() => Logger.overrideLogger(false));
+  afterAll(() => Logger.overrideLogger(true));
+
   beforeEach(async () => {
 
     const module: TestingModule = await Test.createTestingModule({

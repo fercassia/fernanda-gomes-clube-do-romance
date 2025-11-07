@@ -9,18 +9,18 @@ import { USERS_REPOSITORY_INTERFACE } from './interfaces/repository/iUsersReposi
 import { RolesEntity } from './entities/roles.entity';
 import { UsersModel } from './model/users.model';
 import { UtilsModule } from '../../utils/utils.module';
-import { VerificationCodesEntity } from './entities/verificationCodes.entity';
-import { ActiveUsersMapper } from './mapper/activeUsers.mapper';
-import { ActiveUsersModel } from './model/activeUsers.model';
+import { LoginUsersMapper } from './mapper/loginUsers.mapper';
+import { LoginUsersModel } from './model/loginUsers.model';
+
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UsersEntity, RolesEntity, VerificationCodesEntity]), UtilsModule],
+  imports: [TypeOrmModule.forFeature([UsersEntity, RolesEntity]), UtilsModule],
   controllers: [UsersController],
-  providers: [UsersService, CreateUsersMapper, ActiveUsersMapper, UsersModel, ActiveUsersModel, {
+  providers: [UsersService, CreateUsersMapper, LoginUsersMapper, UsersModel, LoginUsersModel, {
     provide: USERS_REPOSITORY_INTERFACE,
     useClass: UsersRepository
     },
   ],
-  exports: [UsersService, CreateUsersMapper, UsersModel, ActiveUsersMapper, ActiveUsersModel],
+  exports: [UsersService, CreateUsersMapper, UsersModel, LoginUsersMapper, LoginUsersModel],
 })
 export class UsersModule {}

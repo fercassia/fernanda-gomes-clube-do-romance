@@ -6,9 +6,10 @@ import { UsersModel } from "../model/users.model";
 
 export class CreateUsersMapper {
   static toModel(createUserDto: CreateUsersRequestDto, roleIdDefault: number = 1): UsersModel {
-    return new UsersModel(createUserDto.displayName.toLocaleLowerCase().trim (), createUserDto.email.toLocaleLowerCase().trim(),
+    return new UsersModel(createUserDto.displayName.trim (), createUserDto.email.toLocaleLowerCase().trim(),
                            createUserDto.password, roleIdDefault);
   }
+  
   static toEntity(userModel: UsersModel): UsersEntity {
     const user = new UsersEntity();
     user.displayName = userModel.displayName;

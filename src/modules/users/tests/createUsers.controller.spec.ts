@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from '../controllers/users.controller';
 import { UsersService } from '../services/users.service';
 import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
-import { BadRequestException, HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, HttpStatus, INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
@@ -23,6 +23,10 @@ describe('UsersController - create users', () => {
   const mockUsersServices = {
     create: jest.fn(),
   };
+  
+  beforeAll(() => Logger.overrideLogger(false));
+  afterAll(() => Logger.overrideLogger(true));
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
