@@ -36,10 +36,6 @@ export class UsersRepository implements IUsersRepository{
   }
 
   updateIsActive(id: string): Promise<UpdateResult> {
-    return this.entity.createQueryBuilder()
-    .update(UsersEntity)
-    .set({ isActive: true })
-    .where('LOWER(id) = LOWER(:id)', { id })
-    .execute();
+    return this.entity.update({id}, {isActive: true});
   }
 }
