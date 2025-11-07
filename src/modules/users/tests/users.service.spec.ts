@@ -2,11 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../services/users.service';
 import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
-import { ConflictException, Logger } from '@nestjs/common';
+import { BadRequestException, ConflictException, Logger } from '@nestjs/common';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { UsersModel } from '../model/users.model';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
 import { UsersEntity } from '../entities/users.entity';
+import { LoginUsersModel } from '../model/loginUsers.model';
+import { mock } from 'node:test';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashedPassword'),
@@ -18,11 +20,14 @@ describe('UsersService', () => {
 
   const mockUsersRepository = {
     findByEmailOrDisplayName: jest.fn(),
+    findOneByEmail: jest.fn(),
     create: jest.fn(),
+    updateIsActive: jest.fn(),
   };
 
   const passwordHasherMock = {
       hash: jest.fn().mockResolvedValue('hashedPassword'),
+      verify: jest.fn().mockResolvedValue(true),
   };
 
   beforeAll(() => Logger.overrideLogger(false));
@@ -55,6 +60,8 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+//USER CREATION TESTS START
 
   it('should throw ConflictException if email already exists', async () => {
     const dtoCreateUser1: CreateUsersRequestDto = {
@@ -135,5 +142,105 @@ describe('UsersService', () => {
         role: { id: 1 },
         password: userModel.password,
     }));
+  });
+
+//USER CREATION TESTS END
+
+//USER LOGIN TESTS START
+
+  it('should throw Bad Request if email was not not found', async () => {
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'Password!@#344');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(null);
+    await expect(service.login(loginModel)).rejects.toThrow(BadRequestException);
+    expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
+  });
+
+  it('should throw Bad Request if password was incorrect', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
+    await expect(service.login(loginModel)).rejects.toThrow(BadRequestException);
+    expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
+  });
+
+  it('should Not active user if password is incorrect', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
+
+    await expect(service.login(loginModel)).rejects.toThrow(BadRequestException);
+    expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
+    expect(userEntity.isActive).toBe(false);
+  });
+
+  it('should active user again user if is already active', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: true
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'correctPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+
+    expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
+    expect(userEntity.isActive).toBe(true);
+  });
+
+  it('should activate user if email and password is correct', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'hashedPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(true);
+
+
+    mockUsersRepository.updateIsActive.mockImplementationOnce(async (id: string) => {
+      if(id === userEntity.id) {
+        userEntity.isActive = true;
+      }
+      return Promise.resolve(userEntity);
+    });
+
+    await service.login(loginModel);
+
+    expect(mockUsersRepository.updateIsActive).toHaveBeenCalledWith(userEntity.id);
+    expect(userEntity.isActive).toBe(true);
   });
 });
