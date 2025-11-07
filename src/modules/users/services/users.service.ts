@@ -1,15 +1,11 @@
-import { ConflictException, HttpStatus, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { USERS_REPOSITORY_INTERFACE, type IUsersRepository } from '../interfaces/repository/iUsersRepository.interface';
 import { UsersModel } from '../model/users.model';
 import { UsersEntity } from '../entities/users.entity';
 import { CreateUsersResponseDto } from '../dto/createUsersResponse.dto';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
-import { Metadata } from '../../../utils/metaData';
-import { RandomCodesActivation } from '../../../utils/randomCodesActivation';
-import { ActiveUsersModel } from '../model/activeUsers.model';
-import { ActiveUsersMapper } from '../mapper/activeUsers.mapper';
-
+import { Metadata } from '../../../utils/metaData';import { LoginUsersModel } from '../model/loginUsers.model';
 
 @Injectable()
 export class UsersService {
@@ -44,32 +40,24 @@ export class UsersService {
     return CreateUsersMapper.toResponse(createdUser);
   }
 
-  async activeAccount(id: string, codActive: string) {
+  async login(loginUser: LoginUsersModel): Promise<void> {
+    const user: UsersEntity | null =  await this.usersRepository.findOneByEmail(loginUser.email);
 
-    const userExist: UsersEntity | null = await this.usersRepository.findById(id);
-
-    if(!userExist){
-      Logger.warn(`${HttpStatus.NOT_FOUND} - User with id ${id} not found.`, Metadata.create({serviceMethod: 'UsersService.activeAccount'}));
-      throw new NotFoundException('User not found.')
+    if(!user){
+      Logger.warn(`${HttpStatus.NOT_FOUND} - User with email ${loginUser.email} not found.`, Metadata.create({serviceMethod: 'UsersService.login'}));
+      throw new BadRequestException('Invalid Email or Password.');
     }
 
-    if(userExist.isActive){
-      Logger.warn(`${HttpStatus.CONFLICT} - User with id ${id} is already activated - status: ${userExist.isActive}`, Metadata.create({serviceMethod: 'UsersService.activeAccount'}));
-      throw new ConflictException('User is already activated.')
+    const isPasswordValid = await this.passwordHasher.verify(loginUser.password, user.password);
+
+    if(!isPasswordValid){
+      Logger.warn(`${HttpStatus.UNAUTHORIZED} - Invalid password for user ${loginUser.email}.`, Metadata.create({serviceMethod: 'UsersService.login'}));
+      throw new BadRequestException('Invalid Email or Password.');
     }
 
-    const generateCodeActivation = await RandomCodesActivation.generate();
-
-    const activationCodeToModel = new ActiveUsersModel(id, generateCodeActivation);
-    const activateEntity = ActiveUsersMapper.toEntity(activationCodeToModel);
-
-    //TODO: SALVAR NO BANCO O CÓDIGO DE ATIVAÇÃO
-    //TODO: ENVIAR EMAIL DE CODIGO DE ATIVACAO - CRIAR UM SERVICO PRA ISSO
-    //TODO: VERIFICAR SE O CODIGO ENVIADO É IGUAL AO GERADO E ATIVAR A CONTA - LIMITE VERIFICACAO 3 VEZES OU 30 MIN
-      //TODO: SE NAO VERIFICADO CORRETAMENTE OU A TEMPO DELETAR O CODIGO DA TABELA;
-        //USUARIO CONTINUAR DESATIVADO
-    //TODO: CRIAR UM METODO PARA DELETAR O CODIGO APÓS A ATIVAÇÃO
-
-    return HttpStatus.OK;
+    if(!user.isActive){
+      await this.usersRepository.updateIsActive(user.id);
+    }
+    return;
   }
 }

@@ -7,14 +7,16 @@ import { CreateUsersResponseDto } from '../dto/createUsersResponse.dto';
 import { CreateUsersResponseWrapperDto } from '../dto/createUsersResponseWrapper.dto';
 import { UsersModel } from '../model/users.model';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
-import { UsersRequestIdDto } from '../dto/userRequestId.dto';
-import { ActiveUsersRequestIdDto } from '../dto/atictiveUsersRequest.dto';
+import { LoginUsersRequestDto } from '../dto/loginUsersRequest.dto';
+import { LoginUsersModel } from '../model/loginUsers.model';
+import { LoginUsersMapper } from '../mapper/loginUsers.mapper';
 
 @Controller('api/v1/users')
+@ApiTags('Users')
 export class UsersController {
+
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiTags('Users')
   @ApiCreatedResponse({ description: 'User created successfully.', type: CreateUsersResponseWrapperDto })
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
   @ApiConflictResponse({ description: 'User with given email or display name already exists.', type: ValidationErrorDto })
@@ -30,13 +32,13 @@ export class UsersController {
     };
   }
 
-  @ApiOkResponse({ description: 'User activated successfully.' })
-  @ApiBadRequestResponse({ description: 'Invalid user id.', type: ValidationErrorDto })
-  @ApiNotFoundResponse({ description: 'User not found.', type: ValidationErrorDto })
-  @Patch('active-user/:id')
-  @HttpCode(HttpStatus.OK)
-  async activeAccount(@Param('id') userId: UsersRequestIdDto, @Body() activeUserDto: ActiveUsersRequestIdDto): Promise<any> {
-    const updateActive = await this.usersService.activeAccount(userId.userId, activeUserDto.codActive);
-    return 'any';
+  @ApiOkResponse({ description: 'User logged in successfully.' })
+  @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
+  @ApiBody({ type: LoginUsersRequestDto, description: 'Data required to login a user.' })
+  @Post('login')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async createLogin(@Body() loginUserDto: LoginUsersRequestDto): Promise<void> {
+    const loginUser: LoginUsersModel = LoginUsersMapper.toModel(loginUserDto);
+    await this.usersService.login(loginUser);
   }
 }
