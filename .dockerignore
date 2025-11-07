@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+npm-debug.log
+
+# Build output
+dist/
+
+# Documentation
+DOC.md
+NEST.md
+README.md
+*.md
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Husky
+.husky/
+
+# Environment files (use env_file in docker-compose instead)
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+*.test.ts
+*.spec.ts
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml

@@ -1,0 +1,52 @@
+version: '3.9'  # precisa ser 3.9 para "condition: service_healthy"
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clube_do_romance_app
+    restart: always
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
+      - NODE_ENV=production
+    command: ["sh", "-c", "node dist/config/db/migrations.run.js && node dist/main.js"]
+
+  db:
+    image: postgres:15-alpine3.21
+    container_name: clube_do_romance_db
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: clubedoromance
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      
+  adminer:
+    image: adminer:4.8.1
+    container_name: clube_adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
