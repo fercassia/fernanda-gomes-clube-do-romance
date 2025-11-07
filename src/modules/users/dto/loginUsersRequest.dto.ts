@@ -8,15 +8,8 @@ export class LoginUsersRequestDto {
     maxLength: 100,
     required: true
   })
-  @IsEmail({ 
-    allow_utf8_local_part: false,
-    domain_specific_validation: true
-  }, { message: 'Invalid email format.' })
-  @Matches(/^[a-zA-Z0-9._-]{3,}@[a-zA-Z0-9-]{2,}\.[a-zA-Z]{2,}$/, {
-    message: 'Invalid email. Valid email: johndoe@example.com'
-  })
-  @MaxLength(100, { message: 'Email must be at most 100 characters long' })
-  @MinLength(5, { message: 'Email must be at least 5 characters long' })
+  @MaxLength(100, { message: 'Email invalid' })
+  @MinLength(5, { message: 'Email invalid' })
   readonly email: string;
 
   @ApiProperty({
@@ -27,10 +20,7 @@ export class LoginUsersRequestDto {
     required: true
   })
   @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
-  @MaxLength(20, { message: 'Password must be at most 20 characters long' })
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]+$/, {
-    message: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
-  })
+  @MinLength(8, { message: 'Password invalid' })
+  @MaxLength(20, { message: 'Password invalid' })
   readonly password: string;
 }
