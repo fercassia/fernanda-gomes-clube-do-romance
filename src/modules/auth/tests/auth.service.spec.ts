@@ -1,148 +1,317 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { UsersService } from '../services/users.service';
-// import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
-// import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
-// import { BadRequestException, ConflictException, Logger } from '@nestjs/common';
-// import { CreateUsersMapper } from '../mapper/createUsers.mapper';
-// import { UsersModel } from '../model/users.model';
-// import { PasswordHasherd } from '../../../utils/passwordHashed';
-// import { UsersEntity } from '../entities/users.entity';
-// import { LoginUsersModel } from '../model/loginUsers.model';
-// import { mock } from 'node:test';
+import { Test, TestingModule } from '@nestjs/testing';
+import { USERS_REPOSITORY_INTERFACE } from '../../users/interfaces/repository/iUsersRepository.interface';
+import { BadRequestException, Logger } from '@nestjs/common';
+import { PasswordHasherd } from '../../../utils/passwordHashed';
+import { UsersEntity } from '../../users/entities/users.entity';
+import { LoginUsersModel } from '../model/loginUsers.model';
+import { JwtService } from '@nestjs/jwt';
+import * as jsonwebtoken from 'jsonwebtoken';
+import { LoginUsersMapper } from '../mapper/loginUsers.mapper';
+import { AuthService } from '../services/auth.service';
 
-// jest.mock('bcrypt', () => ({
-//   hash: jest.fn().mockResolvedValue('hashedPassword'),
-// }));
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('hashedPassword'),
+}));
 
-// describe('UsersService', () => {
+describe('AuthService', () => {
 
-//   let service: UsersService;
+  let auth: AuthService;
 
-//   const mockUsersRepository = {
-//     findByEmailOrDisplayName: jest.fn(),
-//     findOneByEmail: jest.fn(),
-//     create: jest.fn(),
-//     updateIsActive: jest.fn(),
-//   };
+  const mockUsersRepository = {
+    findOneByEmail: jest.fn(),
+    updateIsActive: jest.fn(),
+  };
 
-//   const passwordHasherMock = {
-//       hash: jest.fn().mockResolvedValue('hashedPassword'),
-//       verify: jest.fn().mockResolvedValue(true),
-//   };
+  const passwordHasherMock = {
+      hash: jest.fn().mockResolvedValue('hashedPassword'),
+      verify: jest.fn().mockResolvedValue(true),
+  };
 
-//   beforeAll(() => Logger.overrideLogger(false));
-//   afterAll(() => Logger.overrideLogger(true));
 
-//   beforeEach(async () => {
+  const jwtServiceMock = {
+    sign: jest.fn().mockReturnValue('fake-jwt-token'),
+  };
 
-//     const module: TestingModule = await Test.createTestingModule({
-//       providers: [
-//         UsersService,
-//         {
-//           provide: USERS_REPOSITORY_INTERFACE,
-//           useValue: mockUsersRepository,
-//         },
-//         {
-//          provide: PasswordHasherd,
-//          useValue: passwordHasherMock,
-//        },
-//       ],
-//     }).compile();
+  beforeAll(() => Logger.overrideLogger(false));
+  afterAll(() => Logger.overrideLogger(true));
 
-//     service = module.get<UsersService>(UsersService);
-//   });
+  beforeEach(async () => {
 
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//     jest.resetAllMocks();
-//   });
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        {
+          provide: USERS_REPOSITORY_INTERFACE,
+          useValue: mockUsersRepository,
+        },
+        {
+          provide: PasswordHasherd,
+          useValue: passwordHasherMock,
+        },
+        {
+          provide: JwtService,
+          useValue: jwtServiceMock,
+        },
+        LoginUsersMapper, // se preferir, pode mockar também
+        LoginUsersModel,  // opcional: só necessário se for instanciado/used
+      ],
+    }).compile();
 
-//   it('should be defined', () => {
-//     expect(service).toBeDefined();
-//   });
+    auth = module.get<AuthService>(AuthService);
+  });
 
-// //USER CREATION TESTS START
+  afterEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
 
-//   it('should throw ConflictException if email already exists', async () => {
-//     const dtoCreateUser1: CreateUsersRequestDto = {
-//       email: 'test@example.com',
-//       displayName: 'testuser',
-//       password: 'Password!@#344',
-//     };
+  it('should be defined', () => {
+    expect(auth).toBeDefined();
+  });
 
-//     mockUsersRepository.findByEmailOrDisplayName.mockResolvedValueOnce({
-//       id: 'existingUserId',
-//       email: dtoCreateUser1.email,
-//       displayName: 'bananaUser',
-//       password: 'hashedPassword',
-//     });
-//     await expect(service.create(CreateUsersMapper.toModel(dtoCreateUser1))).rejects.toThrow(ConflictException);
-//     expect(mockUsersRepository.create).not.toHaveBeenCalled();
-//   });
+  //USER LOGIN TESTS START
 
-//   it('should throw ConflictException if display name already exists', async () => {
-//     const dtoCreateUser1: CreateUsersRequestDto = {
-//       email: 'test@example.com',
-//       displayName: 'testuser',
-//       password: 'Password!@#344',
-//     };
+  it('should throw Bad Request if email was not not found', async () => {
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'Password!@#344');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(null);
+    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
+  });
 
-//     mockUsersRepository.findByEmailOrDisplayName.mockResolvedValueOnce({
-//       id: 'existingUserId',
-//       email: 'testoutro@example.com' ,
-//       displayName: dtoCreateUser1.displayName,
-//       password: 'hashedPassword',
-//     });
-//     await expect(service.create(CreateUsersMapper.toModel(dtoCreateUser1))).rejects.toThrow(ConflictException);
-//     expect(mockUsersRepository.create).not.toHaveBeenCalled();
-//   });
+  it('should throw Bad Request if password was incorrect', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
+    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
+  });
 
-//   it('should create User correctly', async () => {
-//     const dtoCreateUser1: CreateUsersRequestDto = {
-//       email: 'test@example.com',
-//       displayName: 'testuser',
-//       password: 'Password!@#344',
-//     };
+  it('should Not active user if password is incorrect', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
 
-//     const senha = await passwordHasherMock.hash(dtoCreateUser1.password);
-//     const dtoNovoUserComSenhaHash = {
-//       ...dtoCreateUser1,
-//       password: senha,
-//     };
-//     const userModel: UsersModel = CreateUsersMapper.toModel(dtoNovoUserComSenhaHash);
+    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
+    expect(userEntity.isActive).toBe(false);
+  });
 
-//     mockUsersRepository.findByEmailOrDisplayName.mockResolvedValueOnce(null);
+  it('should Not return jwt if user password is incorrect', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
 
-//     const dateCreated = new Date(); 
-//     const createUserEntity = {
-//       id: 'newUserId',
-//       displayName: userModel.displayName,
-//       email: userModel.email,
-//       role: { id: userModel.role },
-//       password: userModel.password,
-//       createdAt: dateCreated,
-//       updatedAt: dateCreated,
-//       isActive: false
-//     } as UsersEntity;
+    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    expect(jwtServiceMock.sign).not.toHaveBeenCalled();
+  });
 
-//     mockUsersRepository.create.mockResolvedValueOnce(createUserEntity);
+  it('should Not return jwt if user email is incorrect', async () => {
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(false);
 
-//     await expect(service.create(userModel)).resolves.toEqual({
-//       id: 'newUserId',
-//       displayName: dtoCreateUser1.displayName,
-//       email: dtoCreateUser1.email,
-//       createdAt: dateCreated.toString(),
-//     });
+    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    expect(jwtServiceMock.sign).not.toHaveBeenCalled();
+  });
 
-//     expect(passwordHasherMock.hash).toHaveBeenCalledWith(dtoCreateUser1.password);
-//     expect(mockUsersRepository.findByEmailOrDisplayName).toHaveBeenCalledWith(userModel.displayName, userModel.email);
-//     expect(mockUsersRepository.create).toHaveBeenCalledWith(expect.objectContaining({
-//         displayName: userModel.displayName,
-//         email: userModel.email,
-//         role: { id: 1 },
-//         password: userModel.password,
-//     }));
-//   });
+  it('should active user again user if is already active', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: true
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'correctPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
 
-// //USER CREATION TESTS END
-// });
+    expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
+    expect(userEntity.isActive).toBe(true);
+  });
+
+  it('should activate user if email and password is correct', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'hashedPassword');
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(true);
+
+
+    mockUsersRepository.updateIsActive.mockImplementationOnce(async (id: string) => {
+      if(id === userEntity.id) {
+        userEntity.isActive = true;
+      }
+      return Promise.resolve(userEntity);
+    });
+
+    await auth.login(loginModel);
+
+    expect(mockUsersRepository.updateIsActive).toHaveBeenCalledWith(userEntity.id);
+    expect(userEntity.isActive).toBe(true);
+  });
+
+
+  it('should return jwt if user is correct', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'correctPassword');
+
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    passwordHasherMock.verify.mockResolvedValueOnce(true);
+    jwtServiceMock.sign.mockReturnValueOnce('fake-jwt-token');
+
+    const response = await auth.login(loginModel);
+
+    expect(response).toEqual(LoginUsersMapper.toResponse('fake-jwt-token'));
+    expect(jwtServiceMock.sign).toHaveBeenCalledWith({ id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName });
+  });
+
+  it('should return jwt correctly', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'correctPassword');
+
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    passwordHasherMock.verify.mockResolvedValueOnce(true);
+    jwtServiceMock.sign.mockReturnValueOnce(
+      jsonwebtoken.sign(
+        { id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName },
+        'test-secret'
+      )
+    );
+
+    const response = await auth.login(loginModel);
+    const decodedToken = jsonwebtoken.verify(response.access_token, 'test-secret') as any;
+
+    expect(decodedToken).toBeDefined();
+    expect(decodedToken.email).toBe(userEntity.email);
+    expect(decodedToken.id).toBe(userEntity.id);
+    expect(decodedToken.displayName).toBe(userEntity.displayName);
+  });
+
+  it('should return time jwt correctly', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'correctPassword');
+
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    passwordHasherMock.verify.mockResolvedValueOnce(true);
+    jwtServiceMock.sign.mockReturnValueOnce(
+      jsonwebtoken.sign(
+        { id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName },
+        'test-secret',
+        {expiresIn: '30m'}
+      )
+    );
+
+    const response = await auth.login(loginModel);
+    const decodedToken = jsonwebtoken.verify(response.access_token, 'test-secret') as any;
+
+    expect(decodedToken).toBeDefined();
+    expect(decodedToken.exp).toBeDefined();
+    expect(decodedToken.iat).toBeDefined();
+    expect(decodedToken.exp - decodedToken.iat).toBe(1800); // 30 minutes in seconds
+  });
+
+  it('should return time jwt finallized', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
+    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'correctPassword');
+
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    passwordHasherMock.verify.mockResolvedValueOnce(true);
+    jwtServiceMock.sign.mockReturnValueOnce(
+      jsonwebtoken.sign(
+        { id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName },
+        'test-secret', { expiresIn: -1 }
+      )
+    );
+
+    const response = await auth.login(loginModel);
+    expect(() => {
+      jsonwebtoken.verify(response.access_token, 'test-secret');
+    }).toThrow(jsonwebtoken.TokenExpiredError);
+  });
+ //USER LOGIN TESTS END
+});
