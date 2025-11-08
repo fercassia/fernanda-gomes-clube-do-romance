@@ -39,25 +39,4 @@ export class UsersService {
     
     return CreateUsersMapper.toResponse(createdUser);
   }
-
-  async login(loginUser: LoginUsersModel): Promise<void> {
-    const user: UsersEntity | null =  await this.usersRepository.findOneByEmail(loginUser.email);
-
-    if(!user){
-      Logger.warn(`${HttpStatus.NOT_FOUND} - User with email ${loginUser.email} not found.`, Metadata.create({serviceMethod: 'UsersService.login'}));
-      throw new BadRequestException('Invalid Email or Password.');
-    }
-
-    const isPasswordValid = await this.passwordHasher.verify(loginUser.password, user.password);
-
-    if(!isPasswordValid){
-      Logger.warn(`${HttpStatus.UNAUTHORIZED} - Invalid password for user ${loginUser.email}.`, Metadata.create({serviceMethod: 'UsersService.login'}));
-      throw new BadRequestException('Invalid Email or Password.');
-    }
-
-    if(!user.isActive){
-      await this.usersRepository.updateIsActive(user.id);
-    }
-    return;
-  }
 }

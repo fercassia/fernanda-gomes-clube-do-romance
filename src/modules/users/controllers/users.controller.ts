@@ -7,9 +7,6 @@ import { CreateUsersResponseDto } from '../dto/createUsersResponse.dto';
 import { CreateUsersResponseWrapperDto } from '../dto/createUsersResponseWrapper.dto';
 import { UsersModel } from '../model/users.model';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
-import { LoginUsersRequestDto } from '../../auth/dto/loginRequest.dto';
-import { LoginUsersModel } from '../../auth/model/loginUsers.model';
-import { LoginUsersMapper } from '../../auth/mapper/loginUsers.mapper';
 
 @Controller('api/v1/users')
 @ApiTags('Users')
