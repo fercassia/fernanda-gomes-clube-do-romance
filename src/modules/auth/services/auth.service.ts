@@ -5,6 +5,7 @@ import { PasswordHasherd } from '../../../utils/passwordHashed';
 import { Metadata } from '../../../utils/metaData';import { LoginUsersModel } from '../../auth/model/loginUsers.model';
 import { LoginResponseDto } from '../dto/loginResponse.dto';
 import { LoginUsersMapper } from '../mapper/loginUsers.mapper';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,8 @@ export class AuthService {
   constructor(
     @Inject(USERS_REPOSITORY_INTERFACE)
     private readonly usersRepository: IUsersRepository, 
-    private readonly passwordHasher: PasswordHasherd
+    private readonly passwordHasher: PasswordHasherd,
+    private readonly jwtService: JwtService
   ) {}
 
   async login(loginUser: LoginUsersModel): Promise<LoginResponseDto> {
@@ -33,6 +35,12 @@ export class AuthService {
     if(!user.isActive){
       await this.usersRepository.updateIsActive(user.id);
     }
-    return LoginUsersMapper.toResponse('generated-jwt-token'); // Replace with actual token generation logic
+
+    const token = this.generateJwtToken(user);
+    return LoginUsersMapper.toResponse(token);
+  }
+
+  private generateJwtToken (user: UsersEntity): string {
+    return this.jwtService.sign({ id: user.id, email: user.email, displayName: user.displayName });
   }
 }

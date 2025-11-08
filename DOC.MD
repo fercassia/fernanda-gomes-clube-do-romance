@@ -46,6 +46,8 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
         APP_PORT=3001
         HASH_COST=10   # 10 dev -- 12 produção
         ENVIRONMENT=development
+        JWT_SECRET=< secret >
+        JWT_TIME=< time in seconds >
       ```
 
 ## Comandos
