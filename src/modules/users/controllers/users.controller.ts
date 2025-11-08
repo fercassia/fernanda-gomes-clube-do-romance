@@ -7,9 +7,9 @@ import { CreateUsersResponseDto } from '../dto/createUsersResponse.dto';
 import { CreateUsersResponseWrapperDto } from '../dto/createUsersResponseWrapper.dto';
 import { UsersModel } from '../model/users.model';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
-import { LoginUsersRequestDto } from '../dto/loginUsersRequest.dto';
-import { LoginUsersModel } from '../model/loginUsers.model';
-import { LoginUsersMapper } from '../mapper/loginUsers.mapper';
+import { LoginUsersRequestDto } from '../../auth/dto/loginRequest.dto';
+import { LoginUsersModel } from '../../auth/model/loginUsers.model';
+import { LoginUsersMapper } from '../../auth/mapper/loginUsers.mapper';
 
 @Controller('api/v1/users')
 @ApiTags('Users')
@@ -30,15 +30,5 @@ export class UsersController {
       message: 'User created successfully.',
       data: user
     };
-  }
-
-  @ApiOkResponse({ description: 'User logged in successfully.' })
-  @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
-  @ApiBody({ type: LoginUsersRequestDto, description: 'Data required to login a user.' })
-  @Post('login')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async createLogin(@Body() loginUserDto: LoginUsersRequestDto): Promise<void> {
-    const loginUser: LoginUsersModel = LoginUsersMapper.toModel(loginUserDto);
-    await this.usersService.login(loginUser);
   }
 }

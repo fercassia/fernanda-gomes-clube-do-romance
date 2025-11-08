@@ -5,6 +5,7 @@ import { typeOrmConfig } from './config/db/typeorm.config';
 import { SeederModule } from './config/seed/seeder.module';
 import { UsersModule } from './modules/users/users.module';
 import { UtilsModule } from './utils/utils.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UtilsModule } from './utils/utils.module';
     }),
     SeederModule,
     UsersModule,
+    AuthModule,
     UtilsModule
   ],
 })

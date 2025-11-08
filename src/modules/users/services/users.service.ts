@@ -5,7 +5,7 @@ import { UsersModel } from '../model/users.model';
 import { UsersEntity } from '../entities/users.entity';
 import { CreateUsersResponseDto } from '../dto/createUsersResponse.dto';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
-import { Metadata } from '../../../utils/metaData';import { LoginUsersModel } from '../model/loginUsers.model';
+import { Metadata } from '../../../utils/metaData';import { LoginUsersModel } from '../../auth/model/loginUsers.model';
 
 @Injectable()
 export class UsersService {
