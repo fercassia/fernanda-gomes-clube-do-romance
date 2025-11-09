@@ -4,15 +4,11 @@ import { BadRequestException, Logger } from '@nestjs/common';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
 import { UsersEntity } from '../../users/entities/users.entity';
 import { LoginUsersModel } from '../model/loginUsers.model';
-import { JwtService } from '@nestjs/jwt';
-import * as jsonwebtoken from 'jsonwebtoken';
 import { LoginUsersMapper } from '../mapper/loginUsers.mapper';
 import { AuthService } from '../services/auth.service';
 import { LoginResponseDto } from '../dto/loginResponse.dto';
-
-jest.mock('bcrypt', () => ({
-  hash: jest.fn().mockResolvedValue('hashedPassword'),
-}));
+import * as jsonwebtoken from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AuthService', () => {
 
@@ -53,8 +49,8 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: jwtServiceMock,
         },
-        LoginUsersMapper, // se preferir, pode mockar também
-        LoginUsersModel,  // opcional: só necessário se for instanciado/used
+        LoginUsersMapper,
+        LoginUsersModel,
       ],
     }).compile();
 

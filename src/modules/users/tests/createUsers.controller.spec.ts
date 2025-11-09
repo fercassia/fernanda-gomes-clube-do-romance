@@ -86,7 +86,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
     
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -116,7 +116,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
      expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -146,7 +146,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
  expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -176,7 +176,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
   expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -206,7 +206,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
      expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -236,7 +236,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
      expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -266,7 +266,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -296,7 +296,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -326,7 +326,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -356,7 +356,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -385,7 +385,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -415,7 +415,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -444,7 +444,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -473,7 +473,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {

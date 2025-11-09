@@ -18,7 +18,8 @@ export class CreateUsersRequestDto {
   @ApiProperty({
     description: 'The email of the user',
     example: 'johndoe@example.com',
-    maxLength: 100
+    maxLength: 40,
+    minLength: 5
   })
   @IsEmail({ 
     allow_utf8_local_part: false,
@@ -27,7 +28,7 @@ export class CreateUsersRequestDto {
   @Matches(/^[a-zA-Z0-9._-]{3,}@[a-zA-Z0-9-]{2,}\.[a-zA-Z]{2,}$/, {
     message: 'Invalid email. Valid email: johndoe@example.com'
   })
-  @MaxLength(100, { message: 'Email must be at most 100 characters long' })
+  @MaxLength(40, { message: 'Email must be at most 40 characters long' })
   @MinLength(5, { message: 'Email must be at least 5 characters long' })
   readonly email: string;
 

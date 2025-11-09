@@ -1,504 +1,409 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { UsersController } from '../controllers/users.controller';
-// import { UsersService } from '../services/users.service';
-// import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
-// import { BadRequestException, HttpStatus, INestApplication, Logger, ValidationPipe } from '@nestjs/common';
-// import request from 'supertest';
-// import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
-// import { PasswordHasherd } from '../../../utils/passwordHashed';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AuthController } from '../controllers/auth.controller';
+import { AuthService } from '../services/auth.service';
+import { LoginUsersMapper } from '../mapper/loginUsers.mapper';
+import { LoginUsersModel } from '../model/loginUsers.model';
+import { USERS_REPOSITORY_INTERFACE } from '../../users/interfaces/repository/iUsersRepository.interface';
+import { PasswordHasherd } from '../../../utils/passwordHashed';
+import { BadRequestException, HttpStatus, INestApplication, Logger, ValidationPipe } from '@nestjs/common';
+import request from 'supertest';
+import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
+import * as jsonwebtoken from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
+import { UsersEntity } from 'src/modules/users/entities/users.entity';
+import { mock } from 'node:test';
 
-// //INICIO CREATE USERS
-// describe('UsersController - create users', () => {
-//   let app: INestApplication;
-//   let controller: UsersController;
-//   let service: UsersService;
-//   let passwordHasher: PasswordHasherd;
 
-//   const BASE_URL: string = '/api/v1/users';
+//INICIO LOGIN USERS
 
-//   const mockUsersRepository = {
-//     create: jest.fn(),
-//   };
+describe('AuthController - login', () => {
+  let app: INestApplication;
+  let controller: AuthController;
+  let service: AuthService;
 
-//   const mockUsersServices = {
-//     create: jest.fn(),
-//   };
+  const BASE_URL: string = '/api/v1/auth';
+
+  const mockUsersRepository = {
+    findOneByEmail: jest.fn(),
+    updateIsActive: jest.fn(),
+  };
+
+  const passwordHasherMock = {
+    hash: jest.fn().mockResolvedValue('hashedPassword'),
+    verify: jest.fn().mockResolvedValue(true),
+  };
+
+  const jwtServiceMock = {
+    sign: jest.fn().mockReturnValue('fake-jwt-token'),
+  };
+
+  const mockAuthServices = {
+    login: jest.fn(),
+  };
   
-//   beforeAll(() => Logger.overrideLogger(false));
-//   afterAll(() => Logger.overrideLogger(true));
+  beforeAll(() => Logger.overrideLogger(false));
+  afterAll(() => Logger.overrideLogger(true));
 
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       controllers: [UsersController],
-//       providers: [
-//         {
-//           provide: USERS_REPOSITORY_INTERFACE,
-//           useValue: mockUsersRepository,
-//         },
-//         {
-//           provide: UsersService,
-//           useValue: mockUsersServices,
-//         }
-//       ],
-//     }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        {
+          provide: USERS_REPOSITORY_INTERFACE,
+          useValue: mockUsersRepository,
+        },
+        {
+          provide: JwtService,
+          useValue: jwtServiceMock,
+        },
+        {
+          provide: PasswordHasherd,
+          useValue: passwordHasherMock,
+        },
+        LoginUsersMapper,
+        LoginUsersModel,
+      ],
+      controllers: [AuthController],
+    }).compile();
 
-//     controller = module.get<UsersController>(UsersController);
-//     service = module.get<UsersService>(UsersService);
-//     app = module.createNestApplication();
-//     app.useGlobalPipes(new ValidationPipe({
-//     whitelist: true,
-//     forbidNonWhitelisted: true,
-//     transform: true,
-//     transformOptions: { enableImplicitConversion: true },
-//     exceptionFactory: (errors) => {
-//       const resultErrors = errors.map(er => ({
-//         property: er.property,
-//         errorMessage: Object.values(er.constraints || {}).join(', '),
-//       }));
-//       return new BadRequestException({
-//         message: 'Validation error',
-//         errors: resultErrors 
-//         });
-//       },
-//     }));
-//     app.useGlobalFilters(new AllExceptionsFilter());
-//     await app.init();
-//   });
+    controller = module.get<AuthController>(AuthController);
+    service = module.get<AuthService>(AuthService);
 
-//   afterAll(async () => {
-//     await app.close();
-//   });
+    app = module.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+    transformOptions: { enableImplicitConversion: true },
+    exceptionFactory: (errors) => {
+      const resultErrors = errors.map(er => ({
+        property: er.property,
+        errorMessage: Object.values(er.constraints || {}).join(', '),
+      }));
+      return new BadRequestException({
+        message: 'Validation error',
+        errors: resultErrors 
+        });
+      },
+    }));
+    app.useGlobalFilters(new AllExceptionsFilter());
+    await app.init();
+  });
 
-//   it('should be defined', () => {
-//     expect(controller).toBeDefined();
-//   });
+  afterAll(async () => {
+    await app.close();
+  });
 
-//   it('should return 400 when password has less then 8 characters', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'testuser@example.com',
-//       password: 'Shot12@'
-//     }
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+  it('should return 400 when password has less then 8 characters', async () => {
+    const loginUserDto = {
+      email: 'testuser@example.com',
+      password: 'Shot12@'
+    }
+
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginUserDto)
+      .expect(HttpStatus.BAD_REQUEST);
     
-//     expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'password',
-//               errorMessage: 'Password must be at least 8 characters long'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Validation error",
+          errors: [
+            {
+              property: 'password',
+              errorMessage: 'Password invalid'
+            }
+          ]
+        }
+      }
+    });
+    expect(mockAuthServices.login).not.toHaveBeenCalled();
+  })
 
-//   it('should return 400 when password has more then 20 characters', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'testuser@example.com',
-//       password: 'Shot12@12345678901234567890'
-//     }
+  it('should return 400 when password has more then 20 characters', async () => {
+    const loginUserDto = {
+      email: 'testuser@example.com',
+      password: 'Shot12@12345678901234567890'
+    }
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginUserDto)
+      .expect(HttpStatus.BAD_REQUEST);
+    
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Validation error",
+          errors: [
+            {
+              property: 'password',
+              errorMessage: 'Password invalid'
+            }
+          ]
+        }
+      }
+    });
+    expect(mockAuthServices.login).not.toHaveBeenCalled();
+  })
 
-//      expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'password',
-//               errorMessage: 'Password must be at most 20 characters long'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+  it('should return 400 when password is wrong', async () => {
+    const loginUserDto = {
+      email: 'testuser@example.com',
+      password: 'Shot12@1234',
+    };
 
-//   it('should return 400 when password does not contain a number', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'testuser@example.com',
-//       password: 'Shot@PasswordPasses'
-//     }
+    const dateCreated = new Date();
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1 },
+      password: 'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false,
+    } as UsersEntity;
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
 
-//  expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'password',
-//                errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginUserDto)
+      .expect(HttpStatus.BAD_REQUEST);
 
-//   it('should return 400 when password does not contain a special character', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'testuser@example.com',
-//       password: 'Shot23PasswordPasses'
-//     }
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: 'Invalid Email or Password.',
+        },
+      },
+    });
+    expect(mockAuthServices.login).not.toHaveBeenCalled();
+  });
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
 
-//   expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'password',
-//                errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+  it('should return 400 when email has less than 5 characters', async () => {
+    const loginUserDto = {
+      email: 'e@e.c',
+      password: 'Shot12@1234'
+    }
 
-//   it('should return 400 when password does not contain a uppercase letter', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'testuser@example.com',
-//       password: 'shot2@3passwordpasso'
-//     }
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginUserDto)
+      .expect(HttpStatus.BAD_REQUEST);
+    
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Validation error",
+          errors: [
+            {
+              property: 'email',
+              errorMessage: 'Email invalid'
+            }
+          ]
+        }
+      }
+    });
+    expect(mockAuthServices.login).not.toHaveBeenCalled();
+  })
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+  it('should return 400 when email has less than 40 characters', async () => {
+    const loginUserDto = {
+      email: 'aaaaaaaaaaaaaaaaaaaayaaaaaaaa@example.com',
+      password: 'Shot12@1234'
+    }
 
-//      expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'password',
-//                errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginUserDto)
+      .expect(HttpStatus.BAD_REQUEST);
+    
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Validation error",
+          errors: [
+            {
+              property: 'email',
+              errorMessage: 'Email invalid'
+            }
+          ]
+        }
+      }
+    });
+    expect(mockAuthServices.login).not.toHaveBeenCalled();
+  })
 
-//   it('should return 400 when password does not contain a lowercase letter', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'testuser@example.com',
-//       password: 'SHOT2@3PASSWORD'
-//     }
+  it('should return 400 when email does not contain a correct format', async () => {
+    const loginDto = {
+      email: 'tr3dsd4.com',
+      password: 'SHOT2@3Password'
+    }
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginDto)
+      .expect(HttpStatus.BAD_REQUEST);
 
-//      expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'password',
-//                errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Validation error",
+          errors: [
+            {
+              property: 'email',
+              errorMessage: 'Email invalid'
+            }
+          ]
+        }
+      }
+    });
+    expect(mockAuthServices.login).not.toHaveBeenCalled();
+  })
 
-//     it('should return 400 when password does contain special character not allowed', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'testuser@example.com',
-//       password: 'SHOT23Password/@'
-//     }
+  it('should return 400 when email does not contain a correct format 2', async () => {
+    const loginDto = {
+      email: 'tr3ds@dfsdfcom',
+      password: 'SHOT2@3Password'
+    }
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginDto)
+      .expect(HttpStatus.BAD_REQUEST);
 
-//     expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'password',
-//                errorMessage: 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (@$!%*#?&)'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Validation error",
+          errors: [
+            {
+              property: 'email',
+              errorMessage: 'Email invalid'
+            }
+          ]
+        }
+      }
+    });
+    expect(mockAuthServices.login).not.toHaveBeenCalled();
+  })
 
-//   it('should return 400 when email does not contain minimum of character', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'tr@e.com',
-//       password: 'SHOT2@3Password'
-//     }
+  it('should return 400 when email does not found', async () => {
+    const loginDto = {
+      email: 'tr3ds@example.com',
+      password: 'SHOT2@3Password'
+    }
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(null);
+    
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginDto)
+      .expect(HttpStatus.BAD_REQUEST);
 
-//     expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'email',
-//               errorMessage: 'Invalid email. Valid email: johndoe@example.com'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Invalid Email or Password."
+        }
+      }
+    });
+  })
 
-//   it('should return 400 when email does not contain a correct format', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'tr3@e4com',
-//       password: 'SHOT2@3Password'
-//     }
+  it('should return 400 when password is invalid', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+    const loginDto = {
+      email: userEntity.email,
+      password: 'SHOT2@3Password'
+    }
 
-//     expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'email',
-//               errorMessage: 'Invalid email. Valid email: johndoe@example.com, Invalid email format.'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
-//   it('should return 400 when email does not contain a correct format 2-without @', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser',
-//       email: 'tr3out.com',
-//       password: 'SHOT2@3Password'
-//     }
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
+    
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginDto)
+      .expect(HttpStatus.BAD_REQUEST);
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/login`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Invalid Email or Password."
+        }
+      }
+    });
+  })
 
-//     expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'email',
-//               errorMessage: 'Invalid email. Valid email: johndoe@example.com, Invalid email format.'
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
+it('should return 200 and jwt when login is valid', async () => {
+    const dateCreated = new Date(); 
+    const userEntity = {
+      id: 'newUserId',
+      displayName: 'displayName',
+      email: 'test@example.com',
+      role: { id: 1},
+      password:  'hashedPassword',
+      createdAt: dateCreated,
+      updatedAt: dateCreated,
+      isActive: false
+    } as UsersEntity;
 
-//   it('should return 400 when displayname does have invalid characters', async () => {
-//     const createUserDto = {
-//       displayName: 'test@user',
-//       email: 'tr3@out.com',
-//       password: 'SHOT2@3Password'
-//     }
+    const loginDto = {
+      email: userEntity.email,
+      password: userEntity.password,
+    }
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
 
-//     expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'displayName',
-//               errorMessage: 'display name can only contain letters, numbers, underscores and hyphens',
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
-//   it('should return 400 when displayname does not have minimum length', async () => {
-//     const createUserDto = {
-//       displayName: 'te',
-//       email: 'tr3@out.com',
-//       password: 'SHOT2@3Password'
-//     }
+    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
+    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(true);
+    
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/login`)
+      .send(loginDto)
+      .expect(HttpStatus.OK);
 
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
+    expect(response.body).toMatchObject({
+      access_token: "fake-jwt-token",
+      token_type: "Bearer",
+    });
+  })
 
-//     expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'displayName',
-//               errorMessage: 'Display name must be at least 3 characters long',
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
-//   it('should return 400 when displayname does have more than maximum length', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser1234567890testuser1234567890testuser1234567890testuser12345678_',
-//       email: 'tr3@out.com',
-//       password: 'SHOT2@3Password'
-//     }
-
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.BAD_REQUEST);
-
-//     expect(response.body).toMatchObject({
-//       path: "/api/v1/users/register",
-//       cause: {
-//         status: 400,
-//         errorText: {
-//           message: "Validation error",
-//           errors: [
-//             {
-//               property: 'displayName',
-//               errorMessage: 'Display name must be at most 70 characters long',
-//             }
-//           ]
-//         }
-//       }
-//     });
-//     expect(mockUsersServices.create).not.toHaveBeenCalled();
-//   })
-//   it('should return 201 when the user is correct-1', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser12345_-',
-//       email: 'tr3@out.com',
-//       password: 'SHOT2@3Password'
-//     }
-
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.CREATED);
-
-//     expect(response.body).toMatchObject({
-//       message: 'User created successfully.',
-//     });
-//     expect(mockUsersServices.create).toHaveBeenCalled();
-//   })
-
-//   it('should return 201 when the user is correct-2', async () => {
-//     const createUserDto = {
-//       displayName: 'testuser12345_-',
-//       email: 'tr3@out.com',
-//       password: 'SHOT2@3Password'
-//     }
-
-//     mockUsersServices.create.mockResolvedValueOnce({
-//       id: 'uuid-v4-test',
-//       displayName: createUserDto.displayName,
-//       email: createUserDto.email,
-//     });
-
-//     const response = await request(app.getHttpServer())
-//       .post(`${BASE_URL}/register`)
-//       .send(createUserDto)
-//       .expect(HttpStatus.CREATED);
-
-//     expect(response.body).toMatchObject({
-//       message: 'User created successfully.',
-//     });
-//     expect(mockUsersServices.create).toHaveBeenCalled();
-//   })
-//   //FIM CREATE USER TESTS
-// });
+  //FIM LOGIN TESTSpath: `${BASE_URL}/login`,
+});

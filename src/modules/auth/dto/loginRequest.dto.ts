@@ -10,7 +10,7 @@ export class LoginRequestDto {
     required: true
   })
   @IsString()
-  @IsEmail({}, { message: 'Email iid' })
+  @IsEmail({}, { message: 'Email invalid' })
   @MaxLength(40, { message: 'Email invalid' })
   @MinLength(5, { message: 'Email invalid' })
   readonly email: string;
