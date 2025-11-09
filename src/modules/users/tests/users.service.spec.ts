@@ -10,10 +10,6 @@ import { UsersEntity } from '../entities/users.entity';
 import { LoginUsersModel } from '../../auth/model/loginUsers.model';
 import { mock } from 'node:test';
 
-jest.mock('bcrypt', () => ({
-  hash: jest.fn().mockResolvedValue('hashedPassword'),
-}));
-
 describe('UsersService', () => {
 
   let service: UsersService;

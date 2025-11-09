@@ -5,10 +5,13 @@ export class LoginRequestDto {
   @ApiProperty({
     description: 'The email of the user',
     example: 'johndoe@example.com',
-    maxLength: 100,
+    maxLength: 40,
+    minLength: 5,
     required: true
   })
-  @MaxLength(100, { message: 'Email invalid' })
+  @IsString()
+  @IsEmail({}, { message: 'Email iid' })
+  @MaxLength(40, { message: 'Email invalid' })
   @MinLength(5, { message: 'Email invalid' })
   readonly email: string;
 

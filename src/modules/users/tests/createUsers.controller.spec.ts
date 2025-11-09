@@ -313,6 +313,36 @@ describe('UsersController - create users', () => {
     expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
 
+  it('should return 400 when email does contain more than maximum of character', async () => {
+    const createUserDto = {
+      displayName: 'testuser',
+      email: 'aaaaaaaaaaayaaaaaaaaaaaaaaaaa@example.com',
+      password: 'SHOT2@3Password'
+    }
+
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/register`)
+      .send(createUserDto)
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body).toMatchObject({
+      path: "/api/v1/users/register",
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Validation error",
+          errors: [
+            {
+              property: 'email',
+              errorMessage: 'Email must be at most 40 characters long'
+            }
+          ]
+        }
+      }
+    });
+    expect(mockUsersServices.create).not.toHaveBeenCalled();
+  })
+
   it('should return 400 when email does not contain a correct format', async () => {
     const createUserDto = {
       displayName: 'testuser',

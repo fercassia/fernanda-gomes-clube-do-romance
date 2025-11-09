@@ -11,7 +11,7 @@ export class UsersEntity {
     @Column({type: "varchar", length: 70, nullable:false, unique:true, name: "display_name"})
     displayName: string
 
-    @Column({length: 100, unique:true, nullable:false})
+    @Column({length: 42, unique:true, nullable:false})
     email: string;
 
     @ManyToOne(() => RolesEntity,  {eager: true, nullable:false})
