@@ -36,7 +36,7 @@ export class AuthService {
       await this.usersRepository.updateIsActive(user.id);
     }
 
-    const token = this.generateJwtToken(user);
+    const token: string = this.generateJwtToken(user);
     return LoginUsersMapper.toResponse(token);
   }
 

@@ -20,7 +20,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async createLogin(@Body() loginUserDto: LoginRequestDto): Promise<LoginResponseDto> {
     const loginUser: LoginUsersModel = LoginUsersMapper.toModel(loginUserDto);
-    const token = await this.authService.login(loginUser);
+    const token: LoginResponseDto = await this.authService.login(loginUser);
     return token;
   }
 }

@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { LoginUsersMapper } from '../mapper/loginUsers.mapper';
 import { AuthService } from '../services/auth.service';
+import { LoginResponseDto } from '../dto/loginResponse.dto';
 
 jest.mock('bcrypt', () => ({
   hash: jest.fn().mockResolvedValue('hashedPassword'),
@@ -214,7 +215,7 @@ describe('AuthService', () => {
     passwordHasherMock.verify.mockResolvedValueOnce(true);
     jwtServiceMock.sign.mockReturnValueOnce('fake-jwt-token');
 
-    const response = await auth.login(loginModel);
+    const response: LoginResponseDto = await auth.login(loginModel);
 
     expect(response).toEqual(LoginUsersMapper.toResponse('fake-jwt-token'));
     expect(jwtServiceMock.sign).toHaveBeenCalledWith({ id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName });
@@ -243,7 +244,7 @@ describe('AuthService', () => {
       )
     );
 
-    const response = await auth.login(loginModel);
+    const response: LoginResponseDto = await auth.login(loginModel);
     const decodedToken = jsonwebtoken.verify(response.access_token, 'test-secret') as any;
 
     expect(decodedToken).toBeDefined();
@@ -276,7 +277,7 @@ describe('AuthService', () => {
       )
     );
 
-    const response = await auth.login(loginModel);
+    const response: LoginResponseDto= await auth.login(loginModel);
     const decodedToken = jsonwebtoken.verify(response.access_token, 'test-secret') as any;
 
     expect(decodedToken).toBeDefined();
