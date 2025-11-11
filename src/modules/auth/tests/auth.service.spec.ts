@@ -9,6 +9,7 @@ import { AuthService } from '../services/auth.service';
 import { LoginResponseDto } from '../dto/loginResponse.dto';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
+import { ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE } from '../interfaces/repository/iAttemptsBlockedRepository.interface';
 
 describe('AuthService', () => {
 
@@ -17,6 +18,14 @@ describe('AuthService', () => {
   const mockUsersRepository = {
     findOneByEmail: jest.fn(),
     updateIsActive: jest.fn(),
+  };
+
+  const mockAttemptsBlockedRepository = {
+    create: jest.fn(),
+    findAttemptsByUserId: jest.fn(),
+    deleteAttemptsById: jest.fn(),
+    updateAttempts: jest.fn(),
+    updateIsBlocked: jest.fn(),
   };
 
   const passwordHasherMock = {
@@ -33,13 +42,16 @@ describe('AuthService', () => {
   afterAll(() => Logger.overrideLogger(true));
 
   beforeEach(async () => {
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         {
           provide: USERS_REPOSITORY_INTERFACE,
           useValue: mockUsersRepository,
+        },
+        {
+          provide: ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE,
+          useValue: mockAttemptsBlockedRepository,
         },
         {
           provide: PasswordHasherd,

@@ -8,10 +8,9 @@ import { PasswordHasherd } from '../../../utils/passwordHashed';
 import { BadRequestException, HttpStatus, INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
-import * as jsonwebtoken from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { UsersEntity } from 'src/modules/users/entities/users.entity';
-import { mock } from 'node:test';
+import { ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE } from '../interfaces/repository/iAttemptsBlockedRepository.interface';
 
 
 //INICIO LOGIN USERS
@@ -26,6 +25,14 @@ describe('AuthController - login', () => {
   const mockUsersRepository = {
     findOneByEmail: jest.fn(),
     updateIsActive: jest.fn(),
+  };
+
+  const mockAttemptsBlockedRepository = {
+    create: jest.fn(),
+    findAttemptsByUserId: jest.fn(),
+    deleteAttemptsById: jest.fn(),
+    updateAttempts: jest.fn(),
+    updateIsBlocked: jest.fn(),
   };
 
   const passwordHasherMock = {
@@ -53,12 +60,16 @@ describe('AuthController - login', () => {
           useValue: mockUsersRepository,
         },
         {
-          provide: JwtService,
-          useValue: jwtServiceMock,
+          provide: ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE,
+          useValue: mockAttemptsBlockedRepository,
         },
         {
           provide: PasswordHasherd,
           useValue: passwordHasherMock,
+        },
+        {
+          provide: JwtService,
+          useValue: jwtServiceMock,
         },
         LoginUsersMapper,
         LoginUsersModel,
