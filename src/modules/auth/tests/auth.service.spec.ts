@@ -10,10 +10,12 @@ import { LoginResponseDto } from '../dto/loginResponse.dto';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE } from '../interfaces/repository/iAttemptsBlockedRepository.interface';
+import { AttemptsBlockService } from '../services/attemptsBlock.service';
 
 describe('AuthService', () => {
 
   let auth: AuthService;
+  let attemptsBlockService: AttemptsBlockService;
 
   const mockUsersRepository = {
     findOneByEmail: jest.fn(),
@@ -63,10 +65,12 @@ describe('AuthService', () => {
         },
         LoginUsersMapper,
         LoginUsersModel,
+        AttemptsBlockService
       ],
     }).compile();
 
     auth = module.get<AuthService>(AuthService);
+    attemptsBlockService = module.get<AttemptsBlockService>(AttemptsBlockService);
   });
 
   afterEach(() => {

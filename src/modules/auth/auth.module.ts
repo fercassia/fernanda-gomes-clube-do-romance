@@ -14,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AttemptsBlockedRepository } from './repositories/attemptsBlocked.repository';
 import { AttemptsBlockedMapper } from './mapper/attemptsBlocked.mapper';
 import { AttemptsBlockedModel } from './model/attemptsBlocked.model';
+import { AttemptsBlockService } from './services/attemptsBlock.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([AttemptsBlockedEntity]), PassportModule, JwtModule.register({
@@ -22,11 +23,11 @@ import { AttemptsBlockedModel } from './model/attemptsBlocked.model';
   }), 
   UsersModule, UtilsModule],
   controllers: [AuthController],
-  providers: [ AuthService, JwtStrategy, LoginUsersMapper, LoginUsersModel, AttemptsBlockedMapper, AttemptsBlockedModel, {
+  providers: [ AuthService, JwtStrategy, LoginUsersMapper, LoginUsersModel, AttemptsBlockedMapper, AttemptsBlockedModel, AttemptsBlockService, {
     provide: ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE,
     useClass: AttemptsBlockedRepository
   }],
-  exports: [  AuthService, JwtModule, LoginUsersMapper, LoginUsersModel,AttemptsBlockedMapper, AttemptsBlockedModel,{
+  exports: [  AuthService, JwtModule, LoginUsersMapper, LoginUsersModel,AttemptsBlockedMapper, AttemptsBlockedModel, AttemptsBlockService, {
     provide: ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE,
     useClass: AttemptsBlockedRepository
   }],

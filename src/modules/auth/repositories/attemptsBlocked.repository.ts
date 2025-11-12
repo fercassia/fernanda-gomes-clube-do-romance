@@ -19,16 +19,25 @@ export class AttemptsBlockedRepository implements IAttemptsBlockedRepository{
   create(attempt: AttemptsBlockedEntity): Promise<AttemptsBlockedEntity> {
     return this.entity.save(attempt);
   }
-  updateAttempts (id: number, attempts: number, lastAttemptAt: Date): Promise<UpdateResult>{
-    return this.entity.update({id}, {attempts, lastAttemptAt});
+  updateAttempts (userId: string, attempts: number, lastAttemptAt: Date): Promise<UpdateResult>{
+    return this.entity.createQueryBuilder()
+      .update(AttemptsBlockedEntity)
+      .set({ attempts, lastAttemptAt })
+      .where('user_id = :userId', { userId })
+      .execute();
   };
-  updateIsBlocked (id: number, isBlocked: boolean): Promise<UpdateResult>{
-    return this.entity.update({id}, {isBlocked});
+  updateIsBlocked (userId: string, isBlocked: boolean): Promise<UpdateResult>{
+    return this.entity.createQueryBuilder()
+      .update(AttemptsBlockedEntity)
+      .set({ isBlocked })
+      .where('user_id = :userId', { userId })
+      .execute();
   };
   findAttemptsByUserId (idUser: string): Promise<AttemptsBlockedEntity | null> {
-    return this.entity.createQueryBuilder('user').
-          where('LOWER(user.id) = LOWER(:id)', { id: idUser }).
-          getOne();
+    return this.entity
+          .createQueryBuilder('a')
+          .where('LOWER(a.user_id) = LOWER(:idUser)', { idUser })
+          .getOne();
   }
 
   findAttemptsById (id: number): Promise<AttemptsBlockedEntity | null> {

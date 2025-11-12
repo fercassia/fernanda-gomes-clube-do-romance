@@ -11,6 +11,7 @@ import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
 import { JwtService } from '@nestjs/jwt';
 import { UsersEntity } from 'src/modules/users/entities/users.entity';
 import { ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE } from '../interfaces/repository/iAttemptsBlockedRepository.interface';
+import { AttemptsBlockService } from '../services/attemptsBlock.service';
 
 
 //INICIO LOGIN USERS
@@ -19,6 +20,7 @@ describe('AuthController - login', () => {
   let app: INestApplication;
   let controller: AuthController;
   let service: AuthService;
+  let attemptsBlockService: AttemptsBlockService;
 
   const BASE_URL: string = '/api/v1/auth';
 
@@ -73,12 +75,14 @@ describe('AuthController - login', () => {
         },
         LoginUsersMapper,
         LoginUsersModel,
+        AttemptsBlockService,
       ],
       controllers: [AuthController],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
     service = module.get<AuthService>(AuthService);
+    attemptsBlockService = module.get<AttemptsBlockService>(AttemptsBlockService);
 
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({
