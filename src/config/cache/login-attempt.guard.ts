@@ -24,7 +24,11 @@ export class LoginAttemptGuard implements CanActivate {
 
     if (attempts && attempts >= this.MAX_ATTEMPTS) {
       throw new HttpException(
-        'Too many login attempts. Please try again later.',
+        { 
+          message: 'Too many login attempts. Please try again later.' ,
+          remainningAttempts: 0,
+          retryAfter: await this.cacheManager.ttl(cacheKey)
+        },
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }
