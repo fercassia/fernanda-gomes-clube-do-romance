@@ -9,25 +9,14 @@ import { AuthService } from '../services/auth.service';
 import { LoginResponseDto } from '../dto/loginResponse.dto';
 import * as jsonwebtoken from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
-import { ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE } from '../interfaces/repository/iAttemptsBlockedRepository.interface';
-import { AttemptsBlockService } from '../services/attemptsBlock.service';
 
 describe('AuthService', () => {
 
   let auth: AuthService;
-  let attemptsBlockService: AttemptsBlockService;
 
   const mockUsersRepository = {
     findOneByEmail: jest.fn(),
     updateIsActive: jest.fn(),
-  };
-
-  const mockAttemptsBlockedRepository = {
-    create: jest.fn(),
-    findAttemptsByUserId: jest.fn(),
-    deleteAttemptsById: jest.fn(),
-    updateAttempts: jest.fn(),
-    updateIsBlocked: jest.fn(),
   };
 
   const passwordHasherMock = {
@@ -52,10 +41,6 @@ describe('AuthService', () => {
           useValue: mockUsersRepository,
         },
         {
-          provide: ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE,
-          useValue: mockAttemptsBlockedRepository,
-        },
-        {
           provide: PasswordHasherd,
           useValue: passwordHasherMock,
         },
@@ -64,13 +49,11 @@ describe('AuthService', () => {
           useValue: jwtServiceMock,
         },
         LoginUsersMapper,
-        LoginUsersModel,
-        AttemptsBlockService
+        LoginUsersModel
       ],
     }).compile();
 
     auth = module.get<AuthService>(AuthService);
-    attemptsBlockService = module.get<AttemptsBlockService>(AttemptsBlockService);
   });
 
   afterEach(() => {
@@ -105,7 +88,7 @@ describe('AuthService', () => {
     } as UsersEntity;
     const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
-    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
+    passwordHasherMock.verify.mockResolvedValueOnce(false);
     await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
     expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
   });
@@ -230,7 +213,7 @@ describe('AuthService', () => {
     const response: LoginResponseDto = await auth.login(loginModel);
 
     expect(response).toEqual(LoginUsersMapper.toResponse('fake-jwt-token'));
-    expect(jwtServiceMock.sign).toHaveBeenCalledWith({ id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName });
+    expect(jwtServiceMock.sign).toHaveBeenCalledWith({ id: userEntity.id, email: userEntity.email, role: userEntity.role });
   });
 
   it('should return jwt correctly', async () => {
@@ -251,7 +234,7 @@ describe('AuthService', () => {
     passwordHasherMock.verify.mockResolvedValueOnce(true);
     jwtServiceMock.sign.mockReturnValueOnce(
       jsonwebtoken.sign(
-        { id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName },
+        { id: userEntity.id, email: userEntity.email, role: userEntity.role },
         'test-secret'
       )
     );
@@ -262,7 +245,7 @@ describe('AuthService', () => {
     expect(decodedToken).toBeDefined();
     expect(decodedToken.email).toBe(userEntity.email);
     expect(decodedToken.id).toBe(userEntity.id);
-    expect(decodedToken.displayName).toBe(userEntity.displayName);
+    expect(decodedToken.role).toBe(userEntity.role);
   });
 
   it('should return time jwt correctly', async () => {
@@ -283,7 +266,7 @@ describe('AuthService', () => {
     passwordHasherMock.verify.mockResolvedValueOnce(true);
     jwtServiceMock.sign.mockReturnValueOnce(
       jsonwebtoken.sign(
-        { id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName },
+        { id: userEntity.id, email: userEntity.email, role: userEntity.role },
         'test-secret',
         {expiresIn: '30m'}
       )
@@ -316,7 +299,7 @@ describe('AuthService', () => {
     passwordHasherMock.verify.mockResolvedValueOnce(true);
     jwtServiceMock.sign.mockReturnValueOnce(
       jsonwebtoken.sign(
-        { id: userEntity.id, email: userEntity.email, displayName: userEntity.displayName },
+        { id: userEntity.id, email: userEntity.email, role: userEntity.role },
         'test-secret', { expiresIn: -1 }
       )
     );

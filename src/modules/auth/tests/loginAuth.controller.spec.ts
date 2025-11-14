@@ -10,31 +10,18 @@ import request from 'supertest';
 import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
 import { JwtService } from '@nestjs/jwt';
 import { UsersEntity } from 'src/modules/users/entities/users.entity';
-import { ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE } from '../interfaces/repository/iAttemptsBlockedRepository.interface';
-import { AttemptsBlockService } from '../services/attemptsBlock.service';
-
 
 //INICIO LOGIN USERS
-
 describe('AuthController - login', () => {
   let app: INestApplication;
   let controller: AuthController;
   let service: AuthService;
-  let attemptsBlockService: AttemptsBlockService;
 
   const BASE_URL: string = '/api/v1/auth';
 
   const mockUsersRepository = {
     findOneByEmail: jest.fn(),
     updateIsActive: jest.fn(),
-  };
-
-  const mockAttemptsBlockedRepository = {
-    create: jest.fn(),
-    findAttemptsByUserId: jest.fn(),
-    deleteAttemptsById: jest.fn(),
-    updateAttempts: jest.fn(),
-    updateIsBlocked: jest.fn(),
   };
 
   const passwordHasherMock = {
@@ -62,10 +49,6 @@ describe('AuthController - login', () => {
           useValue: mockUsersRepository,
         },
         {
-          provide: ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE,
-          useValue: mockAttemptsBlockedRepository,
-        },
-        {
           provide: PasswordHasherd,
           useValue: passwordHasherMock,
         },
@@ -75,14 +58,12 @@ describe('AuthController - login', () => {
         },
         LoginUsersMapper,
         LoginUsersModel,
-        AttemptsBlockService,
       ],
       controllers: [AuthController],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
     service = module.get<AuthService>(AuthService);
-    attemptsBlockService = module.get<AttemptsBlockService>(AttemptsBlockService);
 
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({
@@ -177,20 +158,8 @@ describe('AuthController - login', () => {
       password: 'Shot12@1234',
     };
 
-    const dateCreated = new Date();
-    const userEntity = {
-      id: 'newUserId',
-      displayName: 'displayName',
-      email: 'test@example.com',
-      role: { id: 1 },
-      password: 'hashedPassword',
-      createdAt: dateCreated,
-      updatedAt: dateCreated,
-      isActive: false,
-    } as UsersEntity;
-
-    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
-    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
+    mockAuthServices.login.mockResolvedValueOnce(loginUserDto);
+    passwordHasherMock.verify.mockResolvedValueOnce(false);
 
     const response = await request(app.getHttpServer())
       .post(`${BASE_URL}/login`)
@@ -368,8 +337,8 @@ describe('AuthController - login', () => {
       password: 'SHOT2@3Password'
     }
 
-    mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
-    (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
+    mockAuthServices.login.mockResolvedValueOnce(loginDto);
+    passwordHasherMock.verify.mockResolvedValueOnce(false);
     
     const response = await request(app.getHttpServer())
       .post(`${BASE_URL}/login`)

@@ -5,25 +5,13 @@ import { LoginUsersModel } from '../auth/model/loginUsers.model';
 import { AuthController } from './controllers/auth.controller';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './services/auth.service';
-import { ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE } from './interfaces/repository/iAttemptsBlockedRepository.interface';
-import { AttemptsBlockedEntity } from './entities/attemptsBlocked.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AttemptsBlockedRepository } from './repositories/attemptsBlocked.repository';
-import { AttemptsBlockedMapper } from './mapper/attemptsBlocked.mapper';
-import { AttemptsBlockedModel } from './model/attemptsBlocked.model';
-import { AttemptsBlockService } from './services/attemptsBlock.service';
 import { AuthJwtModule } from '../../config/auth/auth-jwt.module';
+import { CacheLoginAttemptModule } from '../../config/cache/cache-login-attempt.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AttemptsBlockedEntity]), AuthJwtModule, UsersModule, UtilsModule],
+  imports: [ AuthJwtModule, UsersModule, UtilsModule, CacheLoginAttemptModule],
   controllers: [AuthController],
-  providers: [ AuthService, LoginUsersMapper, LoginUsersModel, AttemptsBlockedMapper, AttemptsBlockedModel, AttemptsBlockService, {
-    provide: ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE,
-    useClass: AttemptsBlockedRepository
-  }],
-  exports: [  AuthService, LoginUsersMapper, LoginUsersModel, AttemptsBlockedMapper, AttemptsBlockedModel, AttemptsBlockService, {
-    provide: ATTEMPTS_BLOCKED_REPOSITORY_INTERFACE,
-    useClass: AttemptsBlockedRepository
-  }],
+  providers: [ AuthService, LoginUsersMapper, LoginUsersModel],
+  exports: [  AuthService, LoginUsersMapper, LoginUsersModel],
 })
 export class AuthModule {}

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus} from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, UseInterceptors, Inject} from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationErrorDto } from '../../../error/dto/ValidationErrorDto';
 import { LoginRequestDto } from '../dto/loginRequest.dto';
@@ -7,6 +7,8 @@ import { LoginUsersMapper } from './../mapper/loginUsers.mapper';
 import { AuthService } from './../services/auth.service';
 import { LoginResponseDto } from '../dto/loginResponse.dto';
 import { Public } from '../../../config/auth/public.decorator';
+import { LoginAttemptGuard } from '../../../config/cache/login-attempt.guard';
+import { LoginFailureInterceptor } from '../../../config/cache/login-failure.interceptor';
 
 @Controller('api/v1/auth')
 @ApiTags('Auth')
@@ -18,6 +20,8 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
   @ApiBody({ type: LoginRequestDto, description: 'Data required to login a user.' })
   @Public()
+  @UseGuards(LoginAttemptGuard)
+  @UseInterceptors(LoginFailureInterceptor)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async createLogin(@Body() loginUserDto: LoginRequestDto): Promise<LoginResponseDto> {
