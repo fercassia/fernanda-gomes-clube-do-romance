@@ -7,6 +7,7 @@ import { CreateUsersResponseDto } from '../dto/createUsersResponse.dto';
 import { CreateUsersResponseWrapperDto } from '../dto/createUsersResponseWrapper.dto';
 import { UsersModel } from '../model/users.model';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
+import { Public } from '../../../config/auth/public.decorator';
 
 @Controller('api/v1/users')
 @ApiTags('Users')
@@ -18,6 +19,7 @@ export class UsersController {
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
   @ApiConflictResponse({ description: 'User with given email or display name already exists.', type: ValidationErrorDto })
   @ApiBody({ type: CreateUsersRequestDto, description: 'Data required to create a new user.' })
+  @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUsersRequestDto): Promise<CreateUsersResponseWrapperDto> {

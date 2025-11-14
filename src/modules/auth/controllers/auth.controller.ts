@@ -1,11 +1,12 @@
 import { Controller, Post, Body, HttpCode, HttpStatus} from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationErrorDto } from '../../../error/dto/ValidationErrorDto';
 import { LoginRequestDto } from '../dto/loginRequest.dto';
 import { LoginUsersModel } from './../model/loginUsers.model';
 import { LoginUsersMapper } from './../mapper/loginUsers.mapper';
 import { AuthService } from './../services/auth.service';
 import { LoginResponseDto } from '../dto/loginResponse.dto';
+import { Public } from '../../../config/auth/public.decorator';
 
 @Controller('api/v1/auth')
 @ApiTags('Auth')
@@ -16,6 +17,7 @@ export class AuthController {
   @ApiOkResponse({ description: 'User logged in successfully.' })
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
   @ApiBody({ type: LoginRequestDto, description: 'Data required to login a user.' })
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async createLogin(@Body() loginUserDto: LoginRequestDto): Promise<LoginResponseDto> {

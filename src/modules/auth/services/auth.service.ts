@@ -41,8 +41,9 @@ export class AuthService {
   }
 
   private generateJwtToken (user: UsersEntity, isBlocked: boolean): string {
+    const payload = { id: user.id, email: user.email, role: user.role };
     if(isBlocked === false){
-      return this.jwtService.sign({ id: user.id, email: user.email, displayName: user.displayName });
+      return this.jwtService.sign(payload);
     }
     Logger.warn(`${HttpStatus.UNAUTHORIZED} - Tentativa de login ${user.email} falha. Causa usuário bloqueado por tentativas excessivas de logins invalidos.`, Metadata.create({serviceMethod: 'AuthService.login'}));
     throw new UnauthorizedException('Login blocked due to multiple invalid attempts. Please try again later.');
