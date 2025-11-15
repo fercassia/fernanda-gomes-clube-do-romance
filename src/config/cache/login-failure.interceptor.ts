@@ -8,46 +8,47 @@ import {
   Logger,
   HttpException,
 } from '@nestjs/common';
-import { Observable, throwError } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import type { Cache } from 'cache-manager';
+import { LoginAttemptService } from './loginAttempt.service';
 
 @Injectable()
 export class LoginFailureInterceptor implements NestInterceptor {
-  private readonly BLOCKED_TIME: number = 7200; //2 horas
-  private readonly MAX_ATTEMPTS: number = 5;
+  readonly MAX_ATTEMPTS: number = 6;
 
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+  constructor(private loginAttemptService: LoginAttemptService) {}
   intercept(context: ExecutionContext, next: CallHandler ): Observable<any>{
     return next.handle().pipe(
-      catchError(async (error) => {
+      catchError((error) => {
         if (error.status === HttpStatus.UNAUTHORIZED) {
           const request = context.switchToHttp().getRequest();
           const ip = request.ip;
           const cacheKey = `login_attempts_${ip}`;
-          let attempts = await this.cacheManager.get<number>(cacheKey) || 0;
-          attempts++;
-
-          const remainingAttempts = Math.max(this.MAX_ATTEMPTS - attempts, 0);
-
-          if (attempts >= this.MAX_ATTEMPTS) {
-            Logger.error(`${HttpStatus.TOO_MANY_REQUESTS} - IP ${ip} has been blocked due to too many failed login attempts.`, );
-            await this.cacheManager.set(cacheKey, attempts, this.BLOCKED_TIME);
-            return throwError(() => new HttpException({
-              message: 'Too many login attempts. Please try again later.',
-              remainingAttempts: 0,
-              retryAfter: this.cacheManager.ttl(cacheKey)}, 
-              HttpStatus.TOO_MANY_REQUESTS
-            ));
-          }
-
-          return throwError(() => new HttpException({
-            message: 'Invalid Email or Password.',
-            remainingAttempts: remainingAttempts,
-          }, HttpStatus.UNAUTHORIZED));
+  
+          return from(this.handleFailedAttempt(cacheKey, ip, error));
         }
         return throwError(() => error);
       }));
+  }
+
+  private async handleFailedAttempt(cacheKey: string, ip: string, originalError: any): Promise<void> {
+    const result = await this.loginAttemptService.incrementAttempts(cacheKey, this.MAX_ATTEMPTS);
+
+    if (result.isBlocked) {
+      Logger.error(`${HttpStatus.TOO_MANY_REQUESTS} - IP ${ip} has been blocked. LoginFailureInterceptor.`, );
+      throw new HttpException({
+              message: 'Too many login attempts. Please try again later.',
+              remainningAttempts: 0,
+              retryAfterMinutes: result.retryAfterMinutes,
+            }, 
+            HttpStatus.TOO_MANY_REQUESTS
+        );
+    }
+
+    throw new HttpException({
+      path: originalError.path,
+      message: originalError.message,
+      remainingAttempts: result.remaining,
+    }, originalError.status);
   }
 }
