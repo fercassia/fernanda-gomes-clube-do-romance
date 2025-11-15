@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { USERS_REPOSITORY_INTERFACE } from '../../users/interfaces/repository/iUsersRepository.interface';
-import { BadRequestException, Logger } from '@nestjs/common';
+import { Logger, UnauthorizedException } from '@nestjs/common';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
 import { UsersEntity } from '../../users/entities/users.entity';
 import { LoginUsersModel } from '../model/loginUsers.model';
@@ -70,7 +70,7 @@ describe('AuthService', () => {
   it('should throw Bad Request if email was not not found', async () => {
     const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'Password!@#344');
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(null);
-    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    await expect(auth.login(loginModel)).rejects.toThrow(UnauthorizedException);
     expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
   });
 
@@ -89,7 +89,7 @@ describe('AuthService', () => {
     const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
     passwordHasherMock.verify.mockResolvedValueOnce(false);
-    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    await expect(auth.login(loginModel)).rejects.toThrow(UnauthorizedException);
     expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
   });
 
@@ -109,7 +109,7 @@ describe('AuthService', () => {
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
     (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
 
-    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    await expect(auth.login(loginModel)).rejects.toThrow(UnauthorizedException);
     expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();
     expect(userEntity.isActive).toBe(false);
   });
@@ -130,7 +130,7 @@ describe('AuthService', () => {
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
     (passwordHasherMock.verify as jest.Mock).mockResolvedValueOnce(false);
 
-    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    await expect(auth.login(loginModel)).rejects.toThrow(UnauthorizedException);
     expect(jwtServiceMock.sign).not.toHaveBeenCalled();
   });
 
@@ -138,7 +138,7 @@ describe('AuthService', () => {
     const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'wrongPassword');
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(false);
 
-    await expect(auth.login(loginModel)).rejects.toThrow(BadRequestException);
+    await expect(auth.login(loginModel)).rejects.toThrow(UnauthorizedException);
     expect(jwtServiceMock.sign).not.toHaveBeenCalled();
   });
 
@@ -245,7 +245,7 @@ describe('AuthService', () => {
     expect(decodedToken).toBeDefined();
     expect(decodedToken.email).toBe(userEntity.email);
     expect(decodedToken.id).toBe(userEntity.id);
-    expect(decodedToken.role).toBe(userEntity.role);
+    expect(decodedToken.role).toStrictEqual(userEntity.role);
   });
 
   it('should return time jwt correctly', async () => {

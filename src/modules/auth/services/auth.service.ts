@@ -27,13 +27,15 @@ export class AuthService {
 
     const isPasswordValid: boolean = await this.passwordHasher.verify(loginUser.password, user.password);
 
-    if(!user.isActive){
-      await this.usersRepository.updateIsActive(user.id);
-    }
-    if(!isPasswordValid){
+    if(isPasswordValid  === false){
       Logger.warn(`${HttpStatus.UNAUTHORIZED} - Invalid password attempt for user with email ${loginUser.email}.`, Metadata.create({serviceMethod: 'AuthService.login'}));
       throw new UnauthorizedException('Invalid Email or Password.');
     }
+
+    if(!user.isActive){
+      await this.usersRepository.updateIsActive(user.id);
+    }
+
     const token: string = this.generateJwtToken(user);
     return LoginUsersMapper.toResponse(token);
   }

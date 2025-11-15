@@ -6,24 +6,20 @@ export class LoginRequestDto {
     description: 'The email of the user',
     example: 'johndoe@example.com',
     maxLength: 40,
-    minLength: 5,
     required: true
   })
   @IsString()
   @IsEmail({}, { message: 'Email invalid' })
   @MaxLength(40, { message: 'Email invalid' })
-  @MinLength(5, { message: 'Email invalid' })
   readonly email: string;
 
   @ApiProperty({
     description: 'The password of the user',
     example: 'P@ssword123',
-    minLength: 8,
     maxLength: 20,
     required: true
   })
   @IsString()
-  @MinLength(8, { message: 'Password invalid' })
   @MaxLength(20, { message: 'Password invalid' })
   readonly password: string;
 }
