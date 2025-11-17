@@ -48,7 +48,7 @@ export class LoginFailureInterceptor implements NestInterceptor {
     throw new HttpException({
       path: originalError.path,
       message: originalError.message,
-      remainingAttempts: result.remaining,
+      remainningAttempts: result.remaining,
     }, originalError.status);
   }
 }

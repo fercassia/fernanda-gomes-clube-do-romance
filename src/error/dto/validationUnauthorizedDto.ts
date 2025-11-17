@@ -5,6 +5,6 @@ export class ValidationUnauthorizedDto {
   @ApiProperty({ example: "/api/v1/auth/login" })
   path: string;
 
-  @ApiProperty({ example: { status: 401, errorText: {message: 'Unauthorized', remainingAttempts: 2} } })
-  cause?: { status: number; errorText: {message: string, remainingAttempts: number, retryAfterMinutes?: number} }
+  @ApiProperty({ example: { status: 401, errorText: {message: 'Unauthorized', remainningAttempts: 2} } })
+  cause?: { status: number; errorText: {message: string, remainningAttempts: number, retryAfterMinutes?: number} }
 }

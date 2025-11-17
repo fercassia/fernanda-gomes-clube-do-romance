@@ -29,7 +29,7 @@ export class LoginAttemptService {
       return ttl;
     }
     const value = ttl - this.TIME_NOW;
-    return Math.floor((value / 1000));
+    return Math.floor((value / 1000) / 60);
   }
   async incrementAttempts(cacheKey: string, maxAttempts: number): Promise<{ attempts: number, remaining: number, isBlocked: boolean , retryAfterMinutes?: number }> {
     const currentAttempts = await this.getAttempts(cacheKey);
