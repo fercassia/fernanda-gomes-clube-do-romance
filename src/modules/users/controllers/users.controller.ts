@@ -1,7 +1,7 @@
 import { Controller, Post, Body, HttpCode, HttpStatus, Patch, Param } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
-import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiConflictResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationErrorDto } from '../../../error/dto/ValidationErrorDto';
 import { CreateUsersResponseDto } from '../dto/createUsersResponse.dto';
 import { CreateUsersResponseWrapperDto } from '../dto/createUsersResponseWrapper.dto';

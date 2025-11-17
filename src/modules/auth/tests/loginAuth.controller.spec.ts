@@ -11,11 +11,9 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersEntity } from '../../../modules/users/entities/users.entity';
 import { LoginFailureInterceptor } from '../../../config/cache/login-failure.interceptor';
 import { LoginAttemptGuard } from '../../../config/cache/login-attempt.guard';
-import { LoginRequestDto } from '../dto/loginRequest.dto';
 import request from 'supertest';
 import 'reflect-metadata';
 import { LoginAttemptService } from '../../../config/cache/loginAttempt.service';
-import { mock } from 'node:test';
 
 //INICIO LOGIN USERS
 describe('AuthController - login', () => {
@@ -417,5 +415,5 @@ it('should return 200 and jwt when login is valid', async () => {
     });
   })
 
-  //FIM LOGIN TESTSpath: `${BASE_URL}/login`,
+  //FIM LOGIN TEST,
 });

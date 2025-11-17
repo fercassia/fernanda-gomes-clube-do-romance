@@ -58,7 +58,7 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
 5. Rodar rodar os logs dos containers: `docker logs -f {nomeDoContainer ou  idContainer}`;
 6. Gerar files de migration: `NAME=<NomeDaMigration> npm run db:generate`;
 7. Visalizar porcentagem de cobertura e rodar os testes unitários: `npm run test:cov`
-8. __Rodar A aplicação localmente para DEBUG e ESENVOLVIMENTO__: 
+8. __Rodar A aplicação localmente para DEBUG e DESENVOLVIMENTO__: 
 
     a. Rode o comando para subir o container do banco (use --remove-orphans para limpar containers antigos): 
     ```

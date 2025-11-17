@@ -3,7 +3,7 @@ import { UsersEntity } from "../entities/users.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
-import { UpdateResult } from "typeorm/browser";
+import { UpdateResult } from "typeorm";
 
 @Injectable()
 export class UsersRepository implements IUsersRepository{
@@ -27,7 +27,7 @@ export class UsersRepository implements IUsersRepository{
 
   findById(id: string): Promise<UsersEntity | null> {
      return this.entity.createQueryBuilder('user').
-          where('LOWER(user.id) = LOWER(:id)', { id }).
+          where('user.id = :id', { id }).
           getOne();
   }
 

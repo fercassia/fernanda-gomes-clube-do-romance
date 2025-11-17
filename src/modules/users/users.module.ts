@@ -18,7 +18,7 @@ import { UtilsModule } from '../../utils/utils.module';
     useClass: UsersRepository
     },
   ],
-  exports: [UsersService, CreateUsersMapper, UsersModel, TypeOrmModule.forFeature([UsersEntity, RolesEntity]),{
+  exports: [UsersService, CreateUsersMapper, UsersModel,{
     provide: USERS_REPOSITORY_INTERFACE,
     useClass: UsersRepository
     },
