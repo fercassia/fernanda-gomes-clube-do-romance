@@ -2,7 +2,8 @@ import { HttpStatus, Inject, Injectable, Logger, UnauthorizedException} from '@n
 import { USERS_REPOSITORY_INTERFACE, type IUsersRepository } from '../../users/interfaces/repository/iUsersRepository.interface';
 import { UsersEntity } from './../../users/entities/users.entity';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
-import { Metadata } from '../../../utils/metaData';import { LoginUsersModel } from '../../auth/model/loginUsers.model';
+import { Metadata } from '../../../utils/metaData';
+import { LoginUsersModel } from '../../auth/model/loginUsers.model';
 import { LoginResponseDto } from '../dto/loginResponse.dto';
 import { LoginUsersMapper } from '../mapper/loginUsers.mapper';
 import { JwtService } from '@nestjs/jwt';
