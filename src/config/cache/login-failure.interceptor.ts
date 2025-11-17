@@ -38,7 +38,7 @@ export class LoginFailureInterceptor implements NestInterceptor {
       Logger.error(`${HttpStatus.TOO_MANY_REQUESTS} - IP ${ip} has been blocked. LoginFailureInterceptor.`, );
       throw new HttpException({
               message: 'Too many login attempts. Please try again later.',
-              remainningAttempts: 0,
+              remainingAttempts: 0,
               retryAfterMinutes: result.retryAfterMinutes,
             }, 
             HttpStatus.TOO_MANY_REQUESTS
@@ -48,7 +48,7 @@ export class LoginFailureInterceptor implements NestInterceptor {
     throw new HttpException({
       path: originalError.path,
       message: originalError.message,
-      remainningAttempts: result.remaining,
+      remainingAttempts: result.remaining,
     }, originalError.status);
   }
 }

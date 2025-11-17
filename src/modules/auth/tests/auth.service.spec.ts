@@ -154,7 +154,7 @@ describe('AuthService', () => {
       updatedAt: dateCreated,
       isActive: true
     } as UsersEntity;
-    const loginModel: LoginUsersModel = new LoginUsersModel('test@example.com', 'correctPassword');
+
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
 
     expect(mockUsersRepository.updateIsActive).not.toHaveBeenCalled();

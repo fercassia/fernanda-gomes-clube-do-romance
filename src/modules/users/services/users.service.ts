@@ -1,11 +1,11 @@
-import { BadRequestException, ConflictException, HttpStatus, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { USERS_REPOSITORY_INTERFACE, type IUsersRepository } from '../interfaces/repository/iUsersRepository.interface';
 import { UsersModel } from '../model/users.model';
 import { UsersEntity } from '../entities/users.entity';
 import { CreateUsersResponseDto } from '../dto/createUsersResponse.dto';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
-import { Metadata } from '../../../utils/metaData';import { LoginUsersModel } from '../../auth/model/loginUsers.model';
+import { Metadata } from '../../../utils/metaData';
 
 @Injectable()
 export class UsersService {

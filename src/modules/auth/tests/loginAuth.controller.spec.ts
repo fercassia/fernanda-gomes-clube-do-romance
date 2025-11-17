@@ -313,7 +313,7 @@ describe('AuthController - login', () => {
     const loginDto = {
       email: userEntity.email,
       password: 'SHOT2@3Password'
-    }
+    };
 
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
     passwordHasherMock.verify.mockResolvedValueOnce(false);
@@ -333,7 +333,7 @@ describe('AuthController - login', () => {
         status: 401,
        errorText: {
           message: "Invalid Email or Password.",
-          remainningAttempts: 5
+          remainingAttempts: 5
         }
       }
     });
@@ -355,7 +355,7 @@ it('should return 429 and user blocked when password is invalid 6 times', async 
     const loginDto = {
       email: userEntity.email,
       password: 'SHOT2@3Password'
-    }
+    };
 
     mockUsersRepository.findOneByEmail.mockResolvedValueOnce(userEntity);
     passwordHasherMock.verify.mockResolvedValueOnce(false);
@@ -376,7 +376,7 @@ it('should return 429 and user blocked when password is invalid 6 times', async 
         status: 429,
        errorText: {
           message: "Too many login attempts. Please try again later.",
-          remainningAttempts: 0,
+          remainingAttempts: 0,
           retryAfterMinutes: 120
         }
       }

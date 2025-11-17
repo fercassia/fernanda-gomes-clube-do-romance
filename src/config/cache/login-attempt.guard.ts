@@ -29,7 +29,7 @@ export class LoginAttemptGuard implements CanActivate {
       throw new HttpException(
         { 
           message: 'Too many login attempts. Please try again later.' ,
-          remainningAttempts: 0,
+          remainingAttempts: 0,
           retryAfterMinutes: ttl,
         },
         HttpStatus.TOO_MANY_REQUESTS,

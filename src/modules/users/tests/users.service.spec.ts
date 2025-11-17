@@ -2,13 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../services/users.service';
 import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
-import { BadRequestException, ConflictException, Logger } from '@nestjs/common';
+import { ConflictException, Logger } from '@nestjs/common';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { UsersModel } from '../model/users.model';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
 import { UsersEntity } from '../entities/users.entity';
-import { LoginUsersModel } from '../../auth/model/loginUsers.model';
-import { mock } from 'node:test';
 
 describe('UsersService', () => {
 
