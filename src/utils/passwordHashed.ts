@@ -16,6 +16,6 @@ export class PasswordHasherd {
     return bcrypt.compare(plain, digest);
   }
   encriptPassword(plain: string): Promise<string> {
-    return Promise.resolve(createHash('sha256').update(plain).digest('hex'));
+    return Promise.resolve(createHash('sha256').update(plain).digest('hex')); 
   }
 }
