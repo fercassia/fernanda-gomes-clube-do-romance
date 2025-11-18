@@ -11,8 +11,6 @@ import { PasswordHasherd } from '../../../utils/passwordHashed';
 describe('UsersController - create users', () => {
   let app: INestApplication;
   let controller: UsersController;
-  let service: UsersService;
-  let passwordHasher: PasswordHasherd;
 
   const BASE_URL: string = '/api/v1/users';
 
@@ -24,6 +22,10 @@ describe('UsersController - create users', () => {
     create: jest.fn(),
   };
   
+  const passwordHasherMock = {
+    encriptPassword: jest.fn().mockResolvedValue('encryptedPassword'),
+  };
+
   beforeAll(() => Logger.overrideLogger(false));
   afterAll(() => Logger.overrideLogger(true));
 
@@ -36,6 +38,10 @@ describe('UsersController - create users', () => {
           useValue: mockUsersRepository,
         },
         {
+          provide: PasswordHasherd,
+          useValue: passwordHasherMock,
+        },
+        {
           provide: UsersService,
           useValue: mockUsersServices,
         }
@@ -43,7 +49,6 @@ describe('UsersController - create users', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
-    service = module.get<UsersService>(UsersService);
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({
     whitelist: true,

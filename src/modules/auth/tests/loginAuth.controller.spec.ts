@@ -31,6 +31,7 @@ describe('AuthController - login', () => {
   const passwordHasherMock = {
     hash: jest.fn().mockResolvedValue('hashedPassword'),
     verify: jest.fn().mockResolvedValue(true),
+    encriptPassword: jest.fn().mockResolvedValue('encryptedPassword'),
   };
 
   const jwtServiceMock = {
