@@ -182,9 +182,9 @@ describe('AuthController - login', () => {
     });
   });
 
-  it('should return 400 when email has less than 40 characters', async () => {
+  it('should return 400 when email has more than 100 characters', async () => {
     const loginUserDto = {
-      email: 'aaaaaaaaaaaaaaaaaaaayaaaaaaaa@example.com',
+      email: 'hduahsduashduahduahsduashduashduashduashduahdaushdguashdausdhausdhaodhas@ashduashduashdaausdhaush.com',
       password: 'Shot12@1234'
     }
 
