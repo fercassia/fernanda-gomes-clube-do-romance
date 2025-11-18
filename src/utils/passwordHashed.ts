@@ -14,4 +14,8 @@ export class PasswordHasherd {
   verify(plain: string, digest: string): Promise<boolean> {
     return bcrypt.compare(plain, digest);
   }
+
+  encriptPassword(plain: string): Promise<string> {
+    return Promise.resolve(Buffer.from(plain, 'utf-8').toString('base64'));
+  }
 }

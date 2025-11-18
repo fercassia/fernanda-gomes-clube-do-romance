@@ -8,12 +8,13 @@ import { CreateUsersResponseWrapperDto } from '../dto/createUsersResponseWrapper
 import { UsersModel } from '../model/users.model';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { Public } from '../../../config/auth/public.decorator';
+import { PasswordHasherd } from '../../../utils/passwordHashed';
 
 @Controller('api/v1/users')
 @ApiTags('Users')
 export class UsersController {
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService, private readonly passwordHasherd: PasswordHasherd) {}
 
   @ApiCreatedResponse({ description: 'User created successfully.', type: CreateUsersResponseWrapperDto })
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
@@ -23,7 +24,13 @@ export class UsersController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUsersRequestDto): Promise<CreateUsersResponseWrapperDto> {
-    const createdUser: UsersModel = CreateUsersMapper.toModel(createUserDto);
+    const passEncripted: string = await this.passwordHasherd.encriptPassword(createUserDto.password);
+    const createUserDtoWithEncriptedPass = {
+      ...createUserDto,
+      password: passEncripted,
+    } as CreateUsersRequestDto;
+
+    const createdUser: UsersModel = CreateUsersMapper.toModel(createUserDtoWithEncriptedPass);
     const user: CreateUsersResponseDto = await this.usersService.create(createdUser);
     return {
       message: 'User created successfully.',

@@ -10,12 +10,14 @@ import { Public } from '../../../config/auth/public.decorator';
 import { LoginAttemptGuard } from '../../../config/cache/login-attempt.guard';
 import { LoginFailureInterceptor } from '../../../config/cache/login-failure.interceptor';
 import { ValidationUnauthorizedDto } from '../../../error/dto/validationUnauthorizedDto';
+import { PasswordHasherd } from '../../../utils/passwordHashed';
+import e from 'express';
 
 @Controller('api/v1/auth')
 @ApiTags('Auth')
 export class AuthController {
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly passwordHasherd: PasswordHasherd) {}
 
   @ApiOkResponse({ description: 'User logged in successfully.', type: LoginResponseDto })
   @ApiBadRequestResponse({ description: 'Invalid user data.', type: ValidationErrorDto })
@@ -27,7 +29,12 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async createLogin(@Body() loginUserDto: LoginRequestDto): Promise<LoginResponseDto> {
-    const loginUser: LoginUsersModel = LoginUsersMapper.toModel(loginUserDto);
+    const passEncripted: string = await this.passwordHasherd.encriptPassword(loginUserDto.password);
+    const loginUserDtoWithEncriptedPass = {
+      email: loginUserDto.email,
+      password: passEncripted,
+    } as LoginRequestDto;
+    const loginUser: LoginUsersModel = LoginUsersMapper.toModel(loginUserDtoWithEncriptedPass);
     const token: LoginResponseDto = await this.authService.login(loginUser);
     return token;
   }
