@@ -18,12 +18,11 @@ export class LoginAttemptGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean>{
     const request = context.switchToHttp().getRequest();
     const ip = request.ip;
-    
-    const cacheKey = `login_attempts_${ip}`;
-    const attempts = await this.loginAttemptService.getAttempts(cacheKey);
+      
+    const attempts = await this.loginAttemptService.getAttempts(ip);
 
     if (attempts && attempts >= this.MAX_ATTEMPTS) {
-      const ttl = this.loginAttemptService.convertTtlToMinutes(await this.loginAttemptService.getTtl(cacheKey));
+      const ttl = this.loginAttemptService.convertTtlToMinutes(await this.loginAttemptService.getTtl(ip));
       Logger.error(`${HttpStatus.TOO_MANY_REQUESTS} - IP ${ip} has been blocked - LoginAttemptGuard`, );
       throw new HttpException(
         { 

@@ -22,16 +22,15 @@ export class LoginFailureInterceptor implements NestInterceptor {
         if (error.status === HttpStatus.UNAUTHORIZED) {
           const request = context.switchToHttp().getRequest();
           const ip = request.ip;
-          const cacheKey = `login_attempts_${ip}`;
   
-          return from(this.handleFailedAttempt(cacheKey, ip, error));
+          return from(this.handleFailedAttempt(ip, error));
         }
         return throwError(() => error);
       }));
   }
 
-  private async handleFailedAttempt(cacheKey: string, ip: string, originalError: any): Promise<void> {
-    const result = await this.loginAttemptService.incrementAttempts(cacheKey, this.MAX_ATTEMPTS);
+  private async handleFailedAttempt(ip: string, originalError: any): Promise<void> {
+    const result = await this.loginAttemptService.incrementAttempts(ip, this.MAX_ATTEMPTS);
 
     if (result.isBlocked) {
       Logger.error(`${HttpStatus.TOO_MANY_REQUESTS} - IP ${ip} has been blocked. LoginFailureInterceptor.`, );

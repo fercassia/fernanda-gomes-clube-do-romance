@@ -44,7 +44,7 @@ describe('AuthController - login', () => {
   const mockLoginAttemptService = {
     getAttempts: jest.fn().mockResolvedValue(0),
     getTtl: jest.fn().mockResolvedValue(7200),
-    incrementAttempts: jest.fn().mockResolvedValue({ attempts: 0, remaining: 5, isBlocked: false }),    resetAttempts: jest.fn().mockResolvedValue(undefined),
+    incrementAttempts: jest.fn().mockResolvedValue({ attempts: 0, remaining: 5, isBlocked: false }),    
     isBlocked: jest.fn().mockResolvedValue(false),
 };
 

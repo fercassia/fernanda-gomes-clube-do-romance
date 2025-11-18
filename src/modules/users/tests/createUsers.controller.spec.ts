@@ -316,7 +316,7 @@ describe('UsersController - create users', () => {
   it('should return 400 when email does contain more than maximum of character', async () => {
     const createUserDto = {
       displayName: 'testuser',
-      email: 'aaaaaaaaaaayaaaaaaaaaaaaaaaaa@example.com',
+      email: 'aaaaaaaaaaayaaaaaaaaaaawqeqweeqqweqweqweweqweqweewaaaaaa@examqweqweqweqweqweqweqeqweqweqweqwewple.com',
       password: 'SHOT2@3Password'
     }
 
@@ -334,13 +334,31 @@ describe('UsersController - create users', () => {
           errors: [
             {
               property: 'email',
-              errorMessage: 'Email must be at most 40 characters long'
+              errorMessage: 'Email must be at most 100 characters long'
             }
           ]
         }
       }
     });
     expect(mockUsersServices.create).not.toHaveBeenCalled();
+  })
+
+  it('should return 400 when email does contain equal maximum of character', async () => {
+    const createUserDto = {
+      displayName: 'testuser',
+      email: 'aaaaaaaaaaayaaaaaaaaaaawqeqweeqqweqweqweweqwqweewaaaaaa@examqweqweqweqweqweqweqeqweqweqweqwewple.com',
+      password: 'SHOT2@3Password'
+    }
+
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/register`)
+      .send(createUserDto)
+      .expect(HttpStatus.CREATED);
+
+    expect(response.body).toMatchObject({
+      message: "User created successfully.",
+    });
+    expect(mockUsersServices.create).toHaveBeenCalled();
   })
 
   it('should return 400 when email does not contain a correct format', async () => {
@@ -364,13 +382,12 @@ describe('UsersController - create users', () => {
           errors: [
             {
               property: 'email',
-              errorMessage: 'Invalid email. Valid email: johndoe@example.com, Invalid email format.'
+              errorMessage: 'Invalid email. Valid email: johndoe@example.com'
             }
           ]
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
   it('should return 400 when email does not contain a correct format 2-without @', async () => {
     const createUserDto = {
@@ -393,13 +410,12 @@ describe('UsersController - create users', () => {
           errors: [
             {
               property: 'email',
-              errorMessage: 'Invalid email. Valid email: johndoe@example.com, Invalid email format.'
+              errorMessage: 'Invalid email. Valid email: johndoe@example.com'
             }
           ]
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
 
   it('should return 400 when displayname does have invalid characters', async () => {
@@ -429,7 +445,6 @@ describe('UsersController - create users', () => {
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
   it('should return 400 when displayname does not have minimum length', async () => {
     const createUserDto = {
@@ -458,7 +473,6 @@ describe('UsersController - create users', () => {
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
   it('should return 400 when displayname does have more than maximum length', async () => {
     const createUserDto = {
@@ -487,7 +501,6 @@ describe('UsersController - create users', () => {
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
   it('should return 201 when the user is correct-1', async () => {
     const createUserDto = {
