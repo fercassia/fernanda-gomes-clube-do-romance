@@ -36,12 +36,18 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
   - rode o comando `npm i` para baixar as dependencias;
   - crie o arquivo `.env` com os dados abaixo;
       ```
-      DB_HOST=db // troque para `localhost` se for criar arquivos de migrations.
-      DB_PORT=5432
-      DB_USER=<user>
-      DB_PASSWORD=<password>
-      DB_NAME=clubedoromance
-      ENVIRONMENT=production
+        PORT=4002
+        DB_HOST=db # localhost -- dev e db  -- produção
+        DB_PORT=5432
+        DB_USER=< user >
+        DB_PASSWORD=< senha >
+        DB_NAME=clubedoromance
+        ADMINER_PORT=8080
+        APP_PORT=3001
+        HASH_COST=10   # 10 dev -- 12 produção
+        ENVIRONMENT=development
+        JWT_SECRET=< secret >
+        JWT_TIME=< time in seconds >
       ```
 
 ## Comandos
@@ -52,7 +58,34 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
 5. Rodar rodar os logs dos containers: `docker logs -f {nomeDoContainer ou  idContainer}`;
 6. Gerar files de migration: `NAME=<NomeDaMigration> npm run db:generate`;
 7. Visalizar porcentagem de cobertura e rodar os testes unitários: `npm run test:cov`
+8. __Rodar A aplicação localmente para DEBUG e DESENVOLVIMENTO__: 
 
+    a. Rode o comando para subir o container do banco (use --remove-orphans para limpar containers antigos): 
+    ```
+      sudo docker compose -f docker-compose.dev.yml up --build -d --remove-orphans
+    ```
+
+    b. Verifique se os containers estão rodando: 
+    ```
+      sudo docker ps
+    ```
+
+    c. Verifique o banco ficar pronto:
+    ```
+      sudo docker logs -f {container id}
+    ```
+
+    d. Rode as migrations:
+    - Se já compilou o projeto:
+    ```
+      node dist/config/db/migrations.run.js
+    ```
+    - Para rodar o .ts diretamente (requer ts-node):
+    ```
+      npx ts-node src/config/db/migrations.run.ts
+        # ou
+      npx ts-node-esm src/config/db/migrations.run.ts
+    ```
 
 ## 💡 Dica rápida: 
 
@@ -61,7 +94,7 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
 - Com o projeto rodando, acesse: 
 
   ```
-  http://localhost:3001/api/docs/clube-livro
+  http://localhost:{PORT}/api/docs/clube-livro
   ```
 
 #### Adminer com preenchimento automático

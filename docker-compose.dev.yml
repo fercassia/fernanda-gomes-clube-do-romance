@@ -1,28 +1,6 @@
-version: '3.9'  # precisa ser 3.9 para "condition: service_healthy"
+version: '3.9'
 
 services:
-
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: clube_do_romance_app
-    restart: always
-    ports:
-      - "${APP_PORT}:3000"
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
-      - NODE_ENV=${ENVIRONMENT:-production}
-    volumes:
-      - .:/usr/src
-      - /usr/src/node_modules
-    command: ["sh", "-c", "node dist/config/db/migrations.run.js && node --watch dist/main.js"]
-
   db:
     image: postgres:15-alpine3.21
     container_name: clube_do_romance_db

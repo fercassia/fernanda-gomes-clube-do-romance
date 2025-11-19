@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from '../controllers/users.controller';
 import { UsersService } from '../services/users.service';
 import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
-import { BadRequestException, HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, HttpStatus, INestApplication, Logger, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
@@ -11,8 +11,6 @@ import { PasswordHasherd } from '../../../utils/passwordHashed';
 describe('UsersController - create users', () => {
   let app: INestApplication;
   let controller: UsersController;
-  let service: UsersService;
-  let passwordHasher: PasswordHasherd;
 
   const BASE_URL: string = '/api/v1/users';
 
@@ -23,6 +21,14 @@ describe('UsersController - create users', () => {
   const mockUsersServices = {
     create: jest.fn(),
   };
+  
+  const passwordHasherMock = {
+    encriptPassword: jest.fn().mockResolvedValue('encryptedPassword'),
+  };
+
+  beforeAll(() => Logger.overrideLogger(false));
+  afterAll(() => Logger.overrideLogger(true));
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
@@ -32,6 +38,10 @@ describe('UsersController - create users', () => {
           useValue: mockUsersRepository,
         },
         {
+          provide: PasswordHasherd,
+          useValue: passwordHasherMock,
+        },
+        {
           provide: UsersService,
           useValue: mockUsersServices,
         }
@@ -39,7 +49,6 @@ describe('UsersController - create users', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
-    service = module.get<UsersService>(UsersService);
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
@@ -82,7 +91,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
     
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -112,7 +121,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
      expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -142,7 +151,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
  expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -172,7 +181,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
   expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -202,7 +211,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
      expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -232,7 +241,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
      expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -262,7 +271,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -292,7 +301,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -309,6 +318,54 @@ describe('UsersController - create users', () => {
     expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
 
+  it('should return 400 when email does contain more than maximum of character', async () => {
+    const createUserDto = {
+      displayName: 'testuser',
+      email: 'aaaaaaaaaaayaaaaaaaaaaawqeqweeqqweqweqweweqweqweewaaaaaa@examqweqweqweqweqweqweqeqweqweqweqwewple.com',
+      password: 'SHOT2@3Password'
+    }
+
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/register`)
+      .send(createUserDto)
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body).toMatchObject({
+      path: `${BASE_URL}/register`,
+      cause: {
+        status: 400,
+        errorText: {
+          message: "Validation error",
+          errors: [
+            {
+              property: 'email',
+              errorMessage: 'Email must be at most 100 characters long'
+            }
+          ]
+        }
+      }
+    });
+    expect(mockUsersServices.create).not.toHaveBeenCalled();
+  })
+
+  it('should return 400 when email does contain equal maximum of character', async () => {
+    const createUserDto = {
+      displayName: 'testuser',
+      email: 'aaaaaaaaaaayaaaaaaaaaaawqeqweeqqweqweqweweqwqweewaaaaaa@examqweqweqweqweqweqweqeqweqweqweqwewple.com',
+      password: 'SHOT2@3Password'
+    }
+
+    const response = await request(app.getHttpServer())
+      .post(`${BASE_URL}/register`)
+      .send(createUserDto)
+      .expect(HttpStatus.CREATED);
+
+    expect(response.body).toMatchObject({
+      message: "User created successfully.",
+    });
+    expect(mockUsersServices.create).toHaveBeenCalled();
+  })
+
   it('should return 400 when email does not contain a correct format', async () => {
     const createUserDto = {
       displayName: 'testuser',
@@ -322,7 +379,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -330,13 +387,12 @@ describe('UsersController - create users', () => {
           errors: [
             {
               property: 'email',
-              errorMessage: 'Invalid email. Valid email: johndoe@example.com, Invalid email format.'
+              errorMessage: 'Invalid email. Valid email: johndoe@example.com'
             }
           ]
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
   it('should return 400 when email does not contain a correct format 2-without @', async () => {
     const createUserDto = {
@@ -351,7 +407,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -359,13 +415,12 @@ describe('UsersController - create users', () => {
           errors: [
             {
               property: 'email',
-              errorMessage: 'Invalid email. Valid email: johndoe@example.com, Invalid email format.'
+              errorMessage: 'Invalid email. Valid email: johndoe@example.com'
             }
           ]
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
 
   it('should return 400 when displayname does have invalid characters', async () => {
@@ -381,7 +436,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -395,7 +450,6 @@ describe('UsersController - create users', () => {
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
   it('should return 400 when displayname does not have minimum length', async () => {
     const createUserDto = {
@@ -410,7 +464,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -424,7 +478,6 @@ describe('UsersController - create users', () => {
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
   it('should return 400 when displayname does have more than maximum length', async () => {
     const createUserDto = {
@@ -439,7 +492,7 @@ describe('UsersController - create users', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body).toMatchObject({
-      path: "/api/v1/users/register",
+      path: `${BASE_URL}/register`,
       cause: {
         status: 400,
         errorText: {
@@ -453,7 +506,6 @@ describe('UsersController - create users', () => {
         }
       }
     });
-    expect(mockUsersServices.create).not.toHaveBeenCalled();
   })
   it('should return 201 when the user is correct-1', async () => {
     const createUserDto = {

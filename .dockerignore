@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 npm-debug.log
+.vscode/
 
 # Build output
 dist/

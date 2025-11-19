@@ -2,27 +2,31 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from '../services/users.service';
 import { USERS_REPOSITORY_INTERFACE } from '../interfaces/repository/iUsersRepository.interface';
 import { CreateUsersRequestDto } from '../dto/createUsersRequest.dto';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, Logger } from '@nestjs/common';
 import { CreateUsersMapper } from '../mapper/createUsers.mapper';
 import { UsersModel } from '../model/users.model';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
 import { UsersEntity } from '../entities/users.entity';
 
-jest.mock('bcrypt', () => ({
-  hash: jest.fn().mockResolvedValue('hashedPassword'),
-}));
-
 describe('UsersService', () => {
+
   let service: UsersService;
 
   const mockUsersRepository = {
     findByEmailOrDisplayName: jest.fn(),
+    findOneByEmail: jest.fn(),
     create: jest.fn(),
+    updateIsActive: jest.fn(),
   };
 
   const passwordHasherMock = {
       hash: jest.fn().mockResolvedValue('hashedPassword'),
+      verify: jest.fn().mockResolvedValue(true),
   };
+
+  beforeAll(() => Logger.overrideLogger(false));
+  afterAll(() => Logger.overrideLogger(true));
+
   beforeEach(async () => {
 
     const module: TestingModule = await Test.createTestingModule({
@@ -50,6 +54,8 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+//USER CREATION TESTS START
 
   it('should throw ConflictException if email already exists', async () => {
     const dtoCreateUser1: CreateUsersRequestDto = {
@@ -131,4 +137,6 @@ describe('UsersService', () => {
         password: userModel.password,
     }));
   });
+
+//USER CREATION TESTS END
 });

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateUsersResponseDto } from './createUserResponse.dto';
+import { CreateUsersResponseDto } from './createUsersResponse.dto';
 
-export class CreateUserResponseWrapperDto {
+export class CreateUsersResponseWrapperDto {
  @ApiProperty({ example: 'User created successfully' })
   message: string;
 

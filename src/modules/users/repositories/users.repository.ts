@@ -3,29 +3,39 @@ import { UsersEntity } from "../entities/users.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
+import { UpdateResult } from "typeorm";
 
 @Injectable()
 export class UsersRepository implements IUsersRepository{
   constructor(@InjectRepository(UsersEntity) private readonly entity: Repository<UsersEntity>){}
 
-  async findByEmailOrDisplayName(displayName: string, email: string):  Promise<UsersEntity | null> {
-    return await this.entity.findOne({
-        where: [
-          { email: email },
-          { displayName: displayName }
-        ]
-    });
+  findByEmailOrDisplayName(displayName: string, email: string):  Promise<UsersEntity | null> {
+    return this.entity.createQueryBuilder('user').
+          where('user.email = :email OR LOWER(user.displayName) = LOWER(:displayName)', { email, displayName }).
+          getOne();
   };
 
-  async findOneByEmail (email: string): Promise<UsersEntity | null>{
-    return await this.entity.findOneBy({email: email});
+  findOneByEmail (email: string): Promise<UsersEntity | null>{
+    return this.entity.findOneBy({email: email});
   }
   
-  async findOneByDisplayName(displayName: string): Promise<UsersEntity | null>{
-    return await this.entity.findOneBy({displayName: displayName});
+  findOneByDisplayName(displayName: string): Promise<UsersEntity | null>{
+    return this.entity.createQueryBuilder('user').
+          where('LOWER(user.displayName) = LOWER(:displayName)', { displayName }).
+          getOne();
   }
 
-  async create(user: UsersEntity): Promise<UsersEntity> {
-    return await this.entity.save(user);
+  findById(id: string): Promise<UsersEntity | null> {
+     return this.entity.createQueryBuilder('user').
+          where('user.id = :id', { id }).
+          getOne();
+  }
+
+  create(user: UsersEntity): Promise<UsersEntity> {
+    return this.entity.save(user);
+  }
+
+  updateIsActive(id: string): Promise<UpdateResult> {
+    return this.entity.update({id}, {isActive: true});
   }
 }

@@ -5,6 +5,11 @@ import { typeOrmConfig } from './config/db/typeorm.config';
 import { SeederModule } from './config/seed/seeder.module';
 import { UsersModule } from './modules/users/users.module';
 import { UtilsModule } from './utils/utils.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AuthJwtModule } from './config/auth/auth-jwt.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './config/auth/jwt-auth.guard';
+import { CacheLoginAttemptModule } from './config/cache/cache-login-attempt.module';
 
 @Module({
   imports: [
@@ -18,7 +23,11 @@ import { UtilsModule } from './utils/utils.module';
     }),
     SeederModule,
     UsersModule,
-    UtilsModule
+    AuthModule,
+    UtilsModule,
+    AuthJwtModule,
+    CacheLoginAttemptModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule {}

@@ -18,6 +18,10 @@ import { UtilsModule } from '../../utils/utils.module';
     useClass: UsersRepository
     },
   ],
-  exports: [UsersService, CreateUsersMapper, UsersModel],
+  exports: [UsersService, CreateUsersMapper, UsersModel,{
+    provide: USERS_REPOSITORY_INTERFACE,
+    useClass: UsersRepository
+    },
+  ],
 })
 export class UsersModule {}
