@@ -4,6 +4,7 @@ import { IsEmail, IsString, MinLength, MaxLength, Matches } from 'class-validato
 export class HealthResponseDto {
   @ApiProperty({
     description: 'Message Api is healthy',
+    example: 'Api is healthy',
   })
   @IsString()
   readonly message: string;
