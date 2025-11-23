@@ -9,7 +9,7 @@ services:
     container_name: clube_do_romance_app
     restart: always
     ports:
-      - "${APP_PORT}:3000"
+      - "${APP_PORT}:${PORT}"
     env_file:
       - .env
     depends_on:
@@ -19,9 +19,13 @@ services:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
       - NODE_ENV=${ENVIRONMENT:-production}
     volumes:
-      - .:/usr/src
       - /usr/src/node_modules
     command: ["sh", "-c", "node dist/config/db/migrations.run.js && node --watch dist/main.js"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${PORT}/api/v1/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   db:
     image: postgres:15-alpine3.21

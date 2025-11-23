@@ -50,6 +50,6 @@ app.useGlobalPipes(new ValidationPipe({
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('api/docs/clube-livro', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 4000);
 }
 bootstrap();

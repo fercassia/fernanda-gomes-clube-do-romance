@@ -38,6 +38,8 @@ FROM node:24.10.0-alpine AS production
 
 WORKDIR /usr/src
 
+RUN apk add --no-cache curl ca-certificates && update-ca-certificates
+
 COPY --chown=node:node --from=build /usr/src/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/dist ./dist
 
