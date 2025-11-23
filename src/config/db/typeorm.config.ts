@@ -1,6 +1,5 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
-import path from "path";
 import { DirEntitiesAndMigrations } from "../../utils/dirEntitiesAndMigrations";
  
 

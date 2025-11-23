@@ -18,6 +18,6 @@ export class DirEntitiesAndMigrations {
     if (this.isProduction()) {
       return 'dist/config/db/migrations/*.js';
     }
-    return  'src/config/db/migrations/*{.ts,.js}';
+    return 'src/config/db/migrations/*{.ts,.js}';
   }
 }

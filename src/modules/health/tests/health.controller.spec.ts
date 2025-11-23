@@ -3,9 +3,9 @@ import { HttpStatus, INestApplication, InternalServerErrorException, Logger, Val
 import request from 'supertest';
 import { HealthController } from '../controller/health.controller';
 import { HealthService } from '../service/health.service';
-import { after, mock } from 'node:test';
 
 //INICIO CONTROLLER HEALTH
+
 describe('HealthController - get health', () => {
   let app: INestApplication;
   let controller: HealthController;

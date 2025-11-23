@@ -1,7 +1,7 @@
 import { InternalServerErrorException, Logger } from "@nestjs/common";
 import { HealthService } from "../service/health.service";
 import { Test, TestingModule } from "@nestjs/testing";
-import { DataSource, In } from "typeorm";
+import { DataSource } from "typeorm";
 import { HealthMapper } from "../mapper/health.mapper";
 
 describe('Health Service', () => {
