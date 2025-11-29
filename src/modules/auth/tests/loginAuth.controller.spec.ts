@@ -9,11 +9,11 @@ import { BadRequestException, HttpStatus, INestApplication, Logger, Unauthorized
 import { AllExceptionsFilter } from '../../../error/AllExceptionsFilter';
 import { JwtService } from '@nestjs/jwt';
 import { UsersEntity } from '../../../modules/users/entities/users.entity';
-import { LoginFailureInterceptor } from '../../../config/cache/login-failure.interceptor';
-import { LoginAttemptGuard } from '../../../config/cache/login-attempt.guard';
+import { LoginFailureInterceptor } from '../../../config/cache/attempts/login-failure.interceptor';
+import { LoginAttemptGuard } from '../../../config/cache/attempts/login-attempt.guard';
 import request from 'supertest';
 import 'reflect-metadata';
-import { LoginAttemptService } from '../../../config/cache/loginAttempt.service';
+import { LoginAttemptService } from '../../../config/cache/attempts/loginAttempt.service';
 
 //INICIO LOGIN USERS
 describe('AuthController - login', () => {

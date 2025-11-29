@@ -6,7 +6,7 @@ import { AuthController } from './controllers/auth.controller';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './services/auth.service';
 import { AuthJwtModule } from '../../config/auth/auth-jwt.module';
-import { CacheLoginAttemptModule } from '../../config/cache/cache-login-attempt.module';
+import { CacheLoginAttemptModule } from '../../config/cache/attempts/cache-login-attempt.module';
 import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({

@@ -1,7 +1,7 @@
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Inject, Injectable } from "@nestjs/common";
 import type { Cache } from "cache-manager";
-import { CACHE_KEYS } from "../../shared/constants/cacheKeys";
+import { CACHE_KEYS } from "../../../shared/constants/cacheKeys";
 
 @Injectable()
 export class LoginAttemptService {
