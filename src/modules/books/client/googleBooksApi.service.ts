@@ -5,7 +5,7 @@ import { GoogleBooksApiResponseDto } from "./googleBooksApiResponse.dto";
 import { GoogleBooksApiMapper } from "./googleBooksApi.mapper";
 
 @Injectable()
-export class BooksApiService {
+export class GoogleBooksApiService {
   private readonly baseUrl: string = 'https://www.googleapis.com/books/v1/volumes/';
 
   constructor(private readonly httpService: HttpService, private readonly googleBooksApiMapper: GoogleBooksApiMapper) { }
