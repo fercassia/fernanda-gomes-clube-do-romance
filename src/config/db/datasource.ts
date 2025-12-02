@@ -1,7 +1,9 @@
 import 'dotenv/config';
+import { DirEntitiesAndMigrations } from '../../utils/dirEntitiesAndMigrations';
 import { DataSource } from 'typeorm';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const entitiesPattern = DirEntitiesAndMigrations.whichDirEntities();
+const migrationsPattern = DirEntitiesAndMigrations.whichDirMigrations();
 
 const dataSource = new DataSource({
   type: 'postgres',
@@ -10,12 +12,8 @@ const dataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME || 'clubedoromance',
-  entities: isProduction 
-    ? ['dist/modules/**/entities/*.js'] 
-    : ['src/modules/**/entities/*{.ts,.js}'],
-  migrations: isProduction 
-    ? ['dist/config/db/migrations/*.js'] 
-    : ['src/config/db/migrations/*{.ts,.js}'],
+  entities: [entitiesPattern],
+  migrations: [migrationsPattern],
   synchronize: false,
   logging: true,
 });
