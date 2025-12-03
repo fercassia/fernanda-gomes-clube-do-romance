@@ -3,7 +3,7 @@ import { LoginAttemptGuard } from './login-attempt.guard';
 import { LoginFailureInterceptor } from './login-failure.interceptor';
 import { CacheModule } from '@nestjs/cache-manager';
 import { LoginAttemptService } from './loginAttempt.service';
-import { CACHE_KEYS_REGISTER_CONFIG } from '../../shared/constants/cacheKeys';
+import { CACHE_KEYS_REGISTER_CONFIG } from '../../../shared/constants/cacheKeys';
 
 @Module({
   imports: [ CacheModule.register({

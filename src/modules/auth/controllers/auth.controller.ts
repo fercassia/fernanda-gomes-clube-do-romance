@@ -1,5 +1,5 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, UseInterceptors, Get, Req } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ValidationErrorDto } from '../../../error/dto/ValidationErrorDto';
 import { LoginRequestDto } from '../dto/loginRequest.dto';
 import { LoginUsersModel } from './../model/loginUsers.model';
@@ -11,7 +11,6 @@ import { LoginAttemptGuard } from '../../../config/cache/attempts/login-attempt.
 import { LoginFailureInterceptor } from '../../../config/cache/attempts/login-failure.interceptor';
 import { ValidationUnauthorizedDto } from '../../../error/dto/validationUnauthorizedDto';
 import { PasswordHasherd } from '../../../utils/passwordHashed';
-import e from 'express';
 
 @Controller('api/v1/auth')
 @ApiTags('Auth')
@@ -37,5 +36,13 @@ export class AuthController {
     const loginUser: LoginUsersModel = LoginUsersMapper.toModel(loginUserDtoWithEncriptedPass);
     const token: LoginResponseDto = await this.authService.login(loginUser);
     return token;
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Unauthorized access.', type: ValidationUnauthorizedDto })
+  @ApiOkResponse({ description: 'Returns authenticated information.', schema: { example: { status: 'success', message: 'Authenticated' } } })
+  @Get('me')
+  @ApiBearerAuth('access-token')
+  async me(@Req() req: Request): Promise<{status: string; message: string}> {
+    return {status: 'success', message: 'Authenticated'};
   }
 }

@@ -11,6 +11,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './config/auth/jwt-auth.guard';
 import { CacheLoginAttemptModule } from './config/cache/attempts/cache-login-attempt.module';
 import { HealthModule } from './modules/health/health.module';
+import { BooksModule } from './modules/books/books.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { HealthModule } from './modules/health/health.module';
     UtilsModule,
     AuthJwtModule,
     CacheLoginAttemptModule,
-    HealthModule
+    HealthModule,
+    BooksModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
