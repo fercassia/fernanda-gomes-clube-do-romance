@@ -26,16 +26,17 @@ export class BooksRepository implements IBooksRepositoryInterface {
     return null;
   }
   async findBooksByIsbn(isbn: string): Promise<BooksEntity[] | null> {
-    return this.entity.find({where: [{isbn10: isbn}, {isbn13: isbn}]});
+    const result = await this.entity.find({where: [{isbn10: isbn}, {isbn13: isbn}]});
+    return result.length > 0 ? result : null;
   }
 
-  async findBooksExternalIdAndSource(externalIds: string[], sources: string[]): Promise<BooksEntity[] | null> {
-    if (!externalIds.length || !sources.length) {
-      return [];
+  async findBooksExternalIdAndSource(filterExternalIdAndSource: Map<string, string>): Promise<BooksEntity[] | null> {
+    if (filterExternalIdAndSource.size === 0) {
+      return null;
     }
     const foundBooks = await this.entity.createQueryBuilder('book')
-      .where('book.external_id IN (:...externalIds)', { externalIds })
-      .andWhere('book.source IN (:...sources)', { sources })
+      .where('book.external_id IN (:...externalIds)', { externalIds: Array.from(filterExternalIdAndSource.keys()) })
+      .andWhere('book.source IN (:...sources)', { sources: Array.from(filterExternalIdAndSource.values()) })
       .getMany();
       
     return foundBooks.length > 0 ? foundBooks : null;

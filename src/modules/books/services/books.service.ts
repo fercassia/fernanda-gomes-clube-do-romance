@@ -62,14 +62,12 @@ export class BooksService {
   }
 
   private async  filterBooksDifference(booksExternal: BooksModel[]): Promise<BooksModel[] | null> {
-    const externalIds: string[] = [];
-    const sources: string[] = [];
+    const filterExternalIdAndSource: Map<string, string> = new Map();
 
     for (const book of booksExternal) {
-      externalIds.push(book.externalId);
-      sources.push(book.source);
+      filterExternalIdAndSource.set(book.externalId, book.source);
     }
-    const existBooks = await this.booksRepository.findBooksExternalIdAndSource(externalIds, sources);
+    const existBooks = await this.booksRepository.findBooksExternalIdAndSource(filterExternalIdAndSource);
 
     if(existBooks === null){
       return booksExternal;
