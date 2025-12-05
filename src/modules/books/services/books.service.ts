@@ -6,11 +6,10 @@ import { GoogleBooksApiResponseDto } from '../client/googleBooksApiResponse.dto'
 import { BOOKS_REPOSITORY_INTERFACE, type IBooksRepositoryInterface } from '../interfaces/repository/iBooksRepository.interface';
 import { BooksEntity } from '../entities/books.entity';
 import { BooksMapper } from '../mapper/books.mapper';
+import { BooksModel } from '../model/books.model';
 
 @Injectable()
 export class BooksService {
-
-  private returnGoogle: GoogleBooksApiResponseDto;
 
   constructor(@Inject(BOOKS_REPOSITORY_INTERFACE) private readonly  booksRepository: IBooksRepositoryInterface, 
                             private readonly googleBooksApiService: GoogleBooksApiService,
@@ -27,7 +26,8 @@ export class BooksService {
 
     if(booksFound === null){
       const returnGoogle: GoogleBooksApiResponseDto = await this.callExternalApi(query.query);
-      const newBooksSaved: BooksEntity[] = await this.saveNewBooksFromGoogleBooks(returnGoogle);
+
+      const newBooksSaved: BooksEntity[] = await this.returnBooksAndNewBooksSavedFromGoogleBooks(returnGoogle);
       if(newBooksSaved.length === 0){
         return [];
       }
@@ -41,7 +41,7 @@ export class BooksService {
     return returnGoogle;
   }
 
-  private async saveNewBooksFromGoogleBooks(newBooks: GoogleBooksApiResponseDto): Promise<BooksEntity[]> {
+  private async returnBooksAndNewBooksSavedFromGoogleBooks(newBooks: GoogleBooksApiResponseDto): Promise<BooksEntity[]> {
     if(newBooks.items.length === 0){
       return [];
     }
@@ -50,13 +50,39 @@ export class BooksService {
       return this.booksMapper.toModelBook(book, book.source)
     });
 
-    //ADICIONAR LOGICA PARA VERIFICAR SE O LIVRO JA EXISTE ANTES DE SALVAR
-    // SALVAR APENAS OS LIVROS QUE NAO EXISTEM NO BANCO
+    const books = await this.filterBooksDifference(booksModels);
 
-    const booksEntities = this.booksMapper.toEntityBooks(booksModels);
+    if(books === null){
+      return this.booksMapper.toEntityBooks(booksModels);
+    }
+    
+    const booksEntities = this.booksMapper.toEntityBooks(books);
     await this.booksRepository.createBooks(booksEntities);
-
     return booksEntities;
+  }
+
+  private async  filterBooksDifference(booksExternal: BooksModel[]): Promise<BooksModel[] | null> {
+    const externalIds: string[] = [];
+    const sources: string[] = [];
+
+    for (const book of booksExternal) {
+      externalIds.push(book.externalId);
+      sources.push(book.source);
+    }
+    const existBooks = await this.booksRepository.findBooksExternalIdAndSource(externalIds, sources);
+
+    if(existBooks === null){
+      return booksExternal;
+    }
+
+    const booksDifference = booksExternal.filter(book => {
+      return !existBooks.some(existBook => existBook.externalId === book.externalId && existBook.source === book.source);
+    })
+
+    if(booksDifference.length === 0){
+      return null;
+    }
+    return booksDifference;
   }
 
   private async verifyExistenceBooks (query: string): Promise<BooksEntity[] | null> {
