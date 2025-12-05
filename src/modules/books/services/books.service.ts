@@ -1,47 +1,69 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { BooksSearchModel } from '../model/booksSearch.model';
 import { GoogleBooksApiService } from '../client/googleBooksApi.service';
 import { Metadata } from '../../../utils/metaData';
-import { NormalizeValueToQuery } from '../../../utils/normalizeValueToQuery';
 import { GoogleBooksApiResponseDto } from '../client/googleBooksApiResponse.dto';
+import { BOOKS_REPOSITORY_INTERFACE, type IBooksRepositoryInterface } from '../interfaces/repository/iBooksRepository.interface';
+import { BooksEntity } from '../entities/books.entity';
+import { BooksMapper } from '../mapper/books.mapper';
 
 @Injectable()
 export class BooksService {
-  constructor(private readonly googleBooksApiService: GoogleBooksApiService, private readonly normalizeValueToQuery: NormalizeValueToQuery) { }
 
-  async getBooks(query: BooksSearchModel): Promise<GoogleBooksApiResponseDto>{
+  private returnGoogle: GoogleBooksApiResponseDto;
 
-    const searchParams: Record<string, string> = this.principalParamsToSearchNotNull(query);
-    const returnGoogle = await this.googleBooksApiService.getBooksGoogleApi(searchParams);
-    //verificar se tem no banco de dados
-    // se não tiver, buscar na api externa
+  constructor(@Inject(BOOKS_REPOSITORY_INTERFACE) private readonly  booksRepository: IBooksRepositoryInterface, 
+                            private readonly googleBooksApiService: GoogleBooksApiService,
+                            private readonly booksMapper: BooksMapper) { }
 
-    //Fazer consulta primeira na api externa para definir contrato de retorno e verificar se funciona;
-    return returnGoogle;
-  }
+  async getBooks(query: BooksSearchModel){
 
-  private principalParamsToSearchNotNull(query: BooksSearchModel): Record<string, string> {
-    const searchParams = {};
-
-    if(query.title !== null){
-      searchParams['title'] = query.title;
-    }
-
-    if(query.author !== null){
-      searchParams['author'] = query.author;
-    }
-
-    if(query.category !== null){
-      searchParams['category'] = query.category;
-    }
-
-    if(query.author === null && query.category === null && query.title === null){
+    if(query.query === null){
       Logger.warn(`Bad Request - At least one search parameter must be provided.`, Metadata.create({serviceMethod: 'BooksService.getBooks'}));
       throw new BadRequestException('At least one search parameter must be provided.');
     }
-    return searchParams;
+
+    const booksFound: BooksEntity[] | null = await this.verifyExistenceBooks(query.query);
+
+    if(booksFound === null){
+      const returnGoogle: GoogleBooksApiResponseDto = await this.callExternalApi(query.query);
+      const newBooksSaved: BooksEntity[] = await this.saveNewBooksFromGoogleBooks(returnGoogle);
+      if(newBooksSaved.length === 0){
+        return [];
+      }
+      return this.booksMapper.toResponseBooks(newBooksSaved);
+    }
+    return this.booksMapper.toResponseBooks(booksFound);
   }
 
-  //Identificar quais parametros de busca e de filtro nao sao nullo para fazer a filtragem e buscar no banco
-  //Talvez fazer uma classe apenas pra isso;
+  private async callExternalApi(query: string): Promise<GoogleBooksApiResponseDto>{
+    const returnGoogle = await this.googleBooksApiService.getBooksGoogleApi(query);
+    return returnGoogle;
+  }
+
+  private async saveNewBooksFromGoogleBooks(newBooks: GoogleBooksApiResponseDto): Promise<BooksEntity[]> {
+    if(newBooks.items.length === 0){
+      return [];
+    }
+
+    const booksModels = newBooks.items.map((book) => {
+      return this.booksMapper.toModelBook(book, book.source)
+    });
+
+    //ADICIONAR LOGICA PARA VERIFICAR SE O LIVRO JA EXISTE ANTES DE SALVAR
+    // SALVAR APENAS OS LIVROS QUE NAO EXISTEM NO BANCO
+
+    const booksEntities = this.booksMapper.toEntityBooks(booksModels);
+    await this.booksRepository.createBooks(booksEntities);
+
+    return booksEntities;
+  }
+
+  private async verifyExistenceBooks (query: string): Promise<BooksEntity[] | null> {
+    const isNumeric = /^\d+$/.test(query);
+    if(isNumeric){
+      return await this.booksRepository.findBooksByIsbn(query);
+    }
+    return await this.booksRepository.findBooksByQuery(query);
+  }
 }

@@ -14,31 +14,13 @@ type FilterType = 'newest' | 'ranking';
 
 export class BooksSearchRequestDto {
   @ApiPropertyOptional({
-    description: 'Title (opcional)',
+    description: 'Query (opcional)',
     example: 'It a Coisa',
   })
   @IsOptional()
   @Type(() => String)
   @IsString()
-  title?: string;
-
-  @ApiPropertyOptional({
-    description: 'Author (opcional)',
-    example: 'Stephen King',
-  })
-  @IsOptional()
-  @Type(() => String)
-  @IsString()
-  author?: string;
-
-  @ApiPropertyOptional({
-    description: 'Categoria (opcional)',
-    example: 'triller',
-  })
-  @IsOptional()
-  @Type(() => String)
-  @IsString()
-  category?: string;
+  query?: string;
 
   @ApiPropertyOptional({ description: 'Página (opcional)', example: 1 })
   @IsOptional()

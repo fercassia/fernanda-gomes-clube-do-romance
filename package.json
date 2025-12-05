@@ -22,7 +22,7 @@
     "commit": "cz",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
     "db:generate": "npm run typeorm -- migration:generate ./src/config/db/migrations/$NAME -d ./src/config/db/datasource.ts",
-    "db:create": "npm run typeorm -- migration:create ./src/config/db/migrations/$NAME -d ./src/config/db/datasource.ts",
+    "db:create": "npm run typeorm -- migration:create ./src/config/db/migrations/$NAME",
     "db:run": "npm run typeorm -- migration:run -d ./src/config/db/datasource.ts",
     "db:revert": "npm run typeorm -- migration:revert -d ./src/config/db/datasource.ts",
     "db:show": "npm run typeorm -- migration:show -d ./src/config/db/datasource.ts"

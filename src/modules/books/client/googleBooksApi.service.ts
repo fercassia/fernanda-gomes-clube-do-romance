@@ -10,12 +10,12 @@ export class GoogleBooksApiService {
 
   constructor(private readonly httpService: HttpService, private readonly googleBooksApiMapper: GoogleBooksApiMapper) { }
 
-  async getBooksGoogleApi(query: Record<string, string>): Promise<GoogleBooksApiResponseDto> {
-    const queryString = await this.queryBuilderSearchParams(query);
+  async getBooksGoogleApi(query: string): Promise<GoogleBooksApiResponseDto> {
 
     const response = this.httpService.get(this.baseUrl, {
       params: {
-        q: queryString,
+        q: query,
+        orderBy: 'newest',
         key: process.env.KEY_GOOGLE_BOOKS,
       },
       headers: {
@@ -25,26 +25,5 @@ export class GoogleBooksApiService {
 
     const { data } = await firstValueFrom(response);
     return this.googleBooksApiMapper.toResponseDtoApiGoogleBooks(data);
-  }
-
-  private async queryBuilderSearchParams(query: Record<string, string>): Promise<string>{
-
-    const stringValues: string[] = [];
-
-    if (query.title) {
-      stringValues.push(query.title);
-    }
-
-    if (query.author) {
-      stringValues.push(query.author);
-    }
-
-    if (query.category) {
-      stringValues.push(query.category);
-    }
-
-    const queryString = stringValues.map(value => value).join('&');
-
-    return queryString;
   }
 }
