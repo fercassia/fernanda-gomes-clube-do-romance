@@ -27,7 +27,7 @@ export class BooksService {
     if(booksFound === null){
       const returnGoogle: GoogleBooksApiResponseDto = await this.callExternalApi(query.query);
 
-      const newBooksSaved: BooksEntity[] = await this.returnBooksAndNewBooksSavedFromGoogleBooks(returnGoogle);
+      const newBooksSaved: BooksEntity[] = await this.booksAndNewBooksSavedFromGoogleBooks(returnGoogle);
       if(newBooksSaved.length === 0){
         return [];
       }
@@ -41,7 +41,7 @@ export class BooksService {
     return returnGoogle;
   }
 
-  private async returnBooksAndNewBooksSavedFromGoogleBooks(newBooks: GoogleBooksApiResponseDto): Promise<BooksEntity[]> {
+  private async booksAndNewBooksSavedFromGoogleBooks(newBooks: GoogleBooksApiResponseDto): Promise<BooksEntity[]> {
     if(newBooks.items.length === 0){
       return [];
     }
