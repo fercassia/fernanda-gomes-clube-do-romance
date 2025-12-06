@@ -7,6 +7,7 @@ import { BOOKS_REPOSITORY_INTERFACE, type IBooksRepositoryInterface } from '../i
 import { BooksEntity } from '../entities/books.entity';
 import { BooksMapper } from '../mapper/books.mapper';
 import { BooksModel } from '../model/books.model';
+import { ApiUriTooLongResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class BooksService {
@@ -22,16 +23,22 @@ export class BooksService {
       throw new BadRequestException('At least one search parameter must be provided.');
     }
 
-    const booksFound: BooksEntity[] | null = await this.verifyExistenceBooks(query.query);
-
+    const booksFound: BooksEntity[] | null = await this.verifyExistenceBooks(query);
     if(booksFound === null){
-      const returnGoogle: GoogleBooksApiResponseDto = await this.callExternalApi(query.query);
 
+      //Faz chamadas para API externa e salva novos livros;
+      const returnGoogle: GoogleBooksApiResponseDto = await this.callExternalApi(query.query);
       const newBooksSaved: BooksEntity[] = await this.booksAndNewBooksSavedFromGoogleBooks(returnGoogle);
       if(newBooksSaved.length === 0){
         return [];
       }
-      return this.booksMapper.toResponseBooks(newBooksSaved);
+
+      //Faz novamente a busca dos novos livros salvos com os filtros iniciais
+      const newBooksSavedReturned: BooksEntity[] | null = await this.verifyExistenceBooks(query);
+      if(newBooksSavedReturned === null){
+        return [];
+      }
+      return this.booksMapper.toResponseBooks(newBooksSavedReturned);
     }
     return this.booksMapper.toResponseBooks(booksFound);
   }
@@ -47,18 +54,17 @@ export class BooksService {
     }
 
     const booksModels = newBooks.items.map((book) => {
-      return this.booksMapper.toModelBook(book, book.source)
+      return this.booksMapper.toModelBook(book)
     });
 
     const books = await this.filterBooksDifference(booksModels);
 
     if(books === null){
-      return this.booksMapper.toEntityBooks(booksModels);
+      return [];
     }
-    
+
     const booksEntities = this.booksMapper.toEntityBooks(books);
-    await this.booksRepository.createBooks(booksEntities);
-    return booksEntities;
+    return await this.booksRepository.createBooks(booksEntities);
   }
 
   private async  filterBooksDifference(booksExternal: BooksModel[]): Promise<BooksModel[] | null> {
@@ -67,6 +73,7 @@ export class BooksService {
     for (const book of booksExternal) {
       filterExternalIdAndSource.set(book.externalId, book.source);
     }
+
     const existBooks = await this.booksRepository.findBooksExternalIdAndSource(filterExternalIdAndSource);
 
     if(existBooks === null){
@@ -83,11 +90,13 @@ export class BooksService {
     return booksDifference;
   }
 
-  private async verifyExistenceBooks (query: string): Promise<BooksEntity[] | null> {
-    const isNumeric = /^\d+$/.test(query);
+  private async verifyExistenceBooks (query: BooksSearchModel): Promise<BooksEntity[] | null> {
+    const queryVerification = query.query ?? '';
+    const isNumeric = /^\d+$/.test(queryVerification);
+
     if(isNumeric){
-      return await this.booksRepository.findBooksByIsbn(query);
+      return await this.booksRepository.findBooksByIsbn(queryVerification);
     }
-    return await this.booksRepository.findBooksByQuery(query);
+    return await this.booksRepository.findBooksByQuery(queryVerification, query.type, query.page, query.limit, query.filter);
   }
 }

@@ -16,6 +16,7 @@ export class GoogleBooksApiService {
       params: {
         q: query,
         orderBy: 'newest',
+        maxResults: 40,
         key: process.env.KEY_GOOGLE_BOOKS,
       },
       headers: {

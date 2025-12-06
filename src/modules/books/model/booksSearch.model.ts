@@ -1,13 +1,12 @@
-
-type BookType = 'magazine' | 'book';
-type FilterType = 'newest' | 'ranking';
+import { DEFAULT_PAGE, DEFAULT_LIMIT_FILTER } from "../../../utils/constants/searchConstants";
+import type { BookType, FilterType } from "../../../utils/types/searchTypes";
 
 export class BooksSearchModel {
   private readonly _query: string | null;
-  private readonly _page: number | null;
-  private readonly _limit: number | null;
-  private readonly _filter: FilterType | null;
-  private readonly _type: BookType | null;
+  private _page: number;
+  private _limit: number;
+  private _filter: FilterType;
+  private _type: BookType;
 
   constructor(
     query?: string,
@@ -16,30 +15,51 @@ export class BooksSearchModel {
     filter?: FilterType,
     type?: BookType,
   ) {
-    this._query = query ?? null;
-    this._page = page ?? null;
-    this._limit = limit ?? null;
-    this._filter = filter ?? null;
-    this._type = type ?? null;
+    this._query = query?.trim() ?? null;
+    this.setPage(page);
+    this.setLimit(limit);
+    this.setFilter(filter);
+    this.setType(type);
   }
 
   get query(): string | null {
     return this._query;
   }
   
-  get page(): number | null {
+  get page(): number {
     return this._page;
   }
 
-  get limit(): number | null {
+  private setPage(value?: number) {
+    const pageNumber = value ?? DEFAULT_PAGE;
+    //Skip calculation for pagination
+    this._page = pageNumber;
+  }
+
+  get limit(): number {
     return this._limit;
   }
 
-  get filter(): FilterType | null {
+  private setLimit(value?: number) {
+    const limitNumber = value ?? DEFAULT_LIMIT_FILTER;
+    this._limit = limitNumber;
+  }
+
+  get filter(): FilterType {
     return this._filter;
   }
 
-  get type(): BookType | null {
+  private setFilter(value?: FilterType) {
+    const isValidFilter = value ?? 'ranking';
+    this._filter = isValidFilter;
+  }
+
+  get type(): BookType {
     return this._type;
+  }
+
+  private setType(value?: BookType) {
+    const isValidType = value ?? 'book';
+    this._type = isValidType;
   }
 }
