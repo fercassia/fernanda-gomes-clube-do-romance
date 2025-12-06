@@ -25,7 +25,6 @@ export class BooksService {
 
     const booksFound: BooksEntity[] | null = await this.verifyExistenceBooks(query);
     if(booksFound === null){
-
       //Faz chamadas para API externa e salva novos livros;
       const returnGoogle: GoogleBooksApiResponseDto = await this.callExternalApi(query.query);
       const newBooksSaved: BooksEntity[] = await this.booksAndNewBooksSavedFromGoogleBooks(returnGoogle);
@@ -38,6 +37,7 @@ export class BooksService {
       if(newBooksSavedReturned === null){
         return [];
       }
+
       return this.booksMapper.toResponseBooks(newBooksSavedReturned);
     }
     return this.booksMapper.toResponseBooks(booksFound);
