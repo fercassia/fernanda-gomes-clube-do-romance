@@ -56,9 +56,7 @@ export class BooksService {
     const booksModels = newBooks.items.map((book) => {
       return this.booksMapper.toModelBook(book)
     });
-
     const books = await this.filterBooksDifference(booksModels);
-
     if(books === null){
       return [];
     }
@@ -69,13 +67,11 @@ export class BooksService {
 
   private async  filterBooksDifference(booksExternal: BooksModel[]): Promise<BooksModel[] | null> {
     const filterExternalIdAndSource: Map<string, string> = new Map();
-
     for (const book of booksExternal) {
       filterExternalIdAndSource.set(book.externalId, book.source);
     }
 
     const existBooks = await this.booksRepository.findBooksExternalIdAndSource(filterExternalIdAndSource);
-
     if(existBooks === null){
       return booksExternal;
     }
@@ -83,20 +79,20 @@ export class BooksService {
     const booksDifference = booksExternal.filter(book => {
       return !existBooks.some(existBook => existBook.externalId === book.externalId && existBook.source === book.source);
     })
-
     if(booksDifference.length === 0){
       return null;
     }
+
     return booksDifference;
   }
 
   private async verifyExistenceBooks (query: BooksSearchModel): Promise<BooksEntity[] | null> {
     const queryVerification = query.query ?? '';
     const isNumeric = /^\d+$/.test(queryVerification);
-
     if(isNumeric){
       return await this.booksRepository.findBooksByIsbn(queryVerification);
     }
+
     return await this.booksRepository.findBooksByQuery(queryVerification, query.type, query.page, query.limit, query.filter);
   }
 }

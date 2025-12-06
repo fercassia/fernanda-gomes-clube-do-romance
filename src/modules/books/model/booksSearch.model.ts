@@ -32,7 +32,6 @@ export class BooksSearchModel {
 
   private setPage(value?: number) {
     const pageNumber = value ?? DEFAULT_PAGE;
-    //Skip calculation for pagination
     this._page = pageNumber;
   }
 
