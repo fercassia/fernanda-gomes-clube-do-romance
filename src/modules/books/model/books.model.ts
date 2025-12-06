@@ -1,3 +1,4 @@
+import type { BookType } from "../../../utils/types/searchTypes";
 import { SourceEnum } from "../enum/source.enum";
 
 export class BooksModel {
@@ -6,6 +7,7 @@ export class BooksModel {
   private readonly _source: SourceEnum;
   private readonly _title: string;
   private readonly _authors: string[];
+  private readonly _type: BookType | null;
   private readonly _selfLink: string | null;
   private readonly _publisher: string | null;
   private readonly _publishedDate: string | null;
@@ -21,6 +23,7 @@ export class BooksModel {
     source: SourceEnum,
     title: string,
     authors: string[],
+    type: BookType | null,
     selfLink?: string | null,
     publisher?: string | null,
     publishedDate?: string | null,
@@ -36,6 +39,7 @@ export class BooksModel {
     this._source = source;
     this._title = title;
     this._authors = authors ?? [];
+    this._type = type ?? null;
     this._selfLink = selfLink ?? null;
     this._publisher = publisher ?? null;
     this._publishedDate = publishedDate ?? null;
@@ -52,6 +56,7 @@ export class BooksModel {
   get source(): SourceEnum { return this._source; }
   get title(): string { return this._title; }
   get authors(): string[] { return this._authors; }
+  get type(): BookType | null { return this._type; }
   get selfLink(): string | null { return this._selfLink; }
   get publisher(): string | null{ return this._publisher; }
   get publishedDate(): string | null { return this._publishedDate; }

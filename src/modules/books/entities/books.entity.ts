@@ -9,6 +9,7 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import { SourceEnum } from '../enum/source.enum';
+import type { BookType } from 'src/utils/types/searchTypes';
 
 @Entity('books')
 @Index('idx_books_externalId_source',['externalId', 'source'])
@@ -33,6 +34,9 @@ export class BooksEntity {
 
   @Column({ type: 'varchar', array: true, nullable: true, name: 'authors' })
   authors: string[];
+
+  @Column({ type: 'varchar', length: 50, nullable: true, name: 'type' })
+  type: BookType | null;
 
   @Column({ type: 'varchar', length: 255, nullable: true, name: 'self_link' })
   selfLink: string | null;

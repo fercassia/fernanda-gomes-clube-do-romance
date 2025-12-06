@@ -1,3 +1,4 @@
+import type { BookType } from "../../../utils/types/searchTypes";
 import { SourceEnum } from "../enum/source.enum";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -31,6 +32,13 @@ export class BooksResponseDto {
     readOnly: true,
   })
   public readonly _authors: string[];
+
+  @ApiProperty({
+    description: "Book type",
+    example: "book",
+    readOnly: true,
+  })
+  public readonly _type: BookType | null;
 
   @ApiProperty({
     description: "Link to the external API resource",
@@ -112,6 +120,7 @@ export class BooksResponseDto {
     source: SourceEnum,
     title: string,
     authors: string[],
+    type: BookType | null,
     selfLink: string | null,
     publisher: string | null,
     publishedDate: string | null,
@@ -127,6 +136,7 @@ export class BooksResponseDto {
     this._source = source;
     this._title = title;
     this._authors = authors ?? [];
+    this._type = type;
     this._selfLink = selfLink ?? null;
     this._publisher = publisher ?? null;
     this._publishedDate = publishedDate ?? null;
@@ -150,6 +160,9 @@ export class BooksResponseDto {
   }
   get authors(): string[] {
     return this._authors;
+  }
+  get type(): BookType | null {
+    return this._type;
   }
   get selfLink(): string | null {
     return this._selfLink;

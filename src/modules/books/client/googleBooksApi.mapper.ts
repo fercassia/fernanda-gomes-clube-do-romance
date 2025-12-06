@@ -14,6 +14,7 @@ export class GoogleBooksApiMapper {
         SourceEnum.GOOGLE_BOOKS_API,
         item.volumeInfo.title,
         item.volumeInfo.authors,
+        item.volumeInfo.printType,
         item.selfLink,
         item.volumeInfo.publisher,
         item.volumeInfo.publishedDate,

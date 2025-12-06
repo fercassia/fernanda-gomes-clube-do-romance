@@ -4,7 +4,6 @@ import { BooksSearchRequestDto } from '../dto/booksSearchRequest.dto';
 import { BooksModel } from '../model/books.model';
 import { BooksEntity } from '../entities/books.entity';
 import { BooksResponseDto } from '../dto/booksResponse.dto';
-import { SourceEnum } from '../enum/source.enum';
 
 @Injectable()
 export class BooksMapper {
@@ -20,12 +19,13 @@ export class BooksMapper {
     );
   }
   //Usado para quando buscar livros na api externa e converter para modelo interno
-  toModelBook(dto: BooksResponseDto, source: SourceEnum): BooksModel {
+  toModelBook(dto: BooksResponseDto): BooksModel {
     return new BooksModel(
       dto.externalId,
-      source,
+      dto.source,
       dto.title,
       dto.authors,
+      dto.type,
       dto.selfLink,
       dto.publisher,
       dto.publishedDate,
@@ -47,6 +47,7 @@ export class BooksMapper {
       entity.source = book.source;
       entity.title = book.title;
       entity.authors = book.authors;
+      entity.type = book.type;
       entity.selfLink = book.selfLink;
       entity.publisher = book.publisher;
       entity.publishedDate = book.publishedDate;
@@ -69,6 +70,7 @@ export class BooksMapper {
           book.source,
           book.title,
           book.authors,
+          book.type,
           book.selfLink,
           book.publisher,
           book.publishedDate,

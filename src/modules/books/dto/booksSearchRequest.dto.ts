@@ -8,9 +8,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
-
-type BookType = 'magazine' | 'book';
-type FilterType = 'newest' | 'ranking';
+import type { BookType, FilterType } from '../../../utils/types/searchTypes';
 
 export class BooksSearchRequestDto {
   @ApiPropertyOptional({
@@ -18,36 +16,31 @@ export class BooksSearchRequestDto {
     example: 'It a Coisa',
   })
   @IsOptional()
-  @Type(() => String)
   @IsString()
-  query?: string;
+  query: string;
 
   @ApiPropertyOptional({ description: 'Página (opcional)', example: 1 })
   @IsOptional()
-  @Type(() => Number)
   @IsInt()
   @Min(1)
   @IsPositive()
-  page?: number;
+  page: number;
 
   @ApiPropertyOptional({ description: 'Limite (opcional)', example: 10 })
   @IsOptional()
-  @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(10)
+  @Max(40)
   @IsPositive()
-  limit?: number;
+  limit: number;
 
   @ApiPropertyOptional({ description: 'Filter (opcional)', example: 'newest' })
   @IsOptional()
-  @Type(() => String)
   @IsString()
-  filter?: FilterType;
+  filter: FilterType;
 
   @ApiPropertyOptional({ description: 'Type (opcional)', example: 'book' })
   @IsOptional()
-  @Type(() => String)
   @IsString()
-  type?: BookType;
+  type: BookType;
 }
