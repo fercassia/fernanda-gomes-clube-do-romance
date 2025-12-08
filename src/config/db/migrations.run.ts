@@ -17,6 +17,6 @@ dataSource.initialize()
   await dataSource.destroy();
   Logger.log('Data Source has been destroyed!', Metadata.create());
 }).catch((error) => {
-  Logger.fatal('Error during Data Source initialization', Metadata.create({error: error, trace: error.stack}));
+  Logger.error('Error during Data Source initialization', Metadata.create({error: error, trace: error.stack}));
   process.exit(1);
 });

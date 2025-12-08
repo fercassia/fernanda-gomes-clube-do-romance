@@ -73,6 +73,8 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
       npx ts-node src/config/db/migrations.run.ts
     ```
 
+    e. Rode os seed
+
   OU
   a. Rode o comando `dev:up-full` para subir o banco de desenvolvimento e rodar migrations
 

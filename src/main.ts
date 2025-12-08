@@ -1,7 +1,7 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import 'reflect-metadata';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './error/AllExceptionsFilter';
 

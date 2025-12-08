@@ -4,8 +4,6 @@ import { DirEntitiesAndMigrations } from "../../utils/dirEntitiesAndMigrations";
  
 
 export const typeOrmConfig = async (configService: ConfigService): Promise<TypeOrmModuleOptions> => {
-    const entitiesPattern = DirEntitiesAndMigrations.whichDirEntities();
-    const migrationsPattern = DirEntitiesAndMigrations.whichDirMigrations();
     
     return {
         type: 'postgres',
@@ -14,8 +12,8 @@ export const typeOrmConfig = async (configService: ConfigService): Promise<TypeO
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME', 'clubedoromance'),
-        entities: [entitiesPattern],
-        migrations: [migrationsPattern],
+        entities: [],
+        migrations: [],
         migrationsRun: false,
         autoLoadEntities: true,
         synchronize: false, // false em producao
