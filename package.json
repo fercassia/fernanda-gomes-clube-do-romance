@@ -25,7 +25,13 @@
     "db:create": "npm run typeorm -- migration:create ./src/config/db/migrations/$NAME",
     "db:run": "npm run typeorm -- migration:run -d ./src/config/db/datasource.ts",
     "db:revert": "npm run typeorm -- migration:revert -d ./src/config/db/datasource.ts",
-    "db:show": "npm run typeorm -- migration:show -d ./src/config/db/datasource.ts"
+    "db:show": "npm run typeorm -- migration:show -d ./src/config/db/datasource.ts",
+    "dev:first-up-full": "sudo docker compose -f docker-compose.dev.yml up -d && npx ts-node src/config/db/migrations.run.ts",
+    "dev:up-db": "sudo docker compose -f docker-compose.dev.yml up -d",
+    "dev:migrations": "npx ts-node src/config/db/migrations.run.ts",
+    "dev:migrations-compiled": "node dist/config/db/migrations.run.js",
+    "stop:dev-db": "sudo docker compose -f docker-compose.dev.yml down",
+    "prod:up-full": "sudo docker compose -f docker-compose.yml up -d"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
