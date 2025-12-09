@@ -7,8 +7,8 @@ import { SourceEnum } from "../enum/source.enum";
 
 @Injectable()
 export class GoogleBooksApiMapper {
-  toResponseDtoApiGoogleBooks(data: IApiGoogleBooksResponse): GoogleBooksApiResponseDto {
-    const itemsListData = (data.items?? []).map((item: IApiGoogleBooksItem) => {
+  toResponseDtoApiGoogleBooks(data: IApiGoogleBooksItem[]): GoogleBooksApiResponseDto {
+    const itemsListData = data.map((item: IApiGoogleBooksItem) => {
       return new BooksResponseDto (
         item.id,
         SourceEnum.GOOGLE_BOOKS_API,
