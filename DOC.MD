@@ -42,11 +42,15 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
 1. Commits padronizados: `npm run commit`;
 2. Gerar imagem nova no projeto: `docker build -t clube-do-romance:{versao} .`;
 3. Rodar o container da imagem pelo dockerfile: `docker run -p{porta}:{portaHost} clube-do-romance:{versao}`;
-4. Rodar rodar os containers do projeto e da base de dados: `sudo docker compose -f docker-compose.yml up -d` ou `prod:up-full`;
+4. Rodar rodar os containers do projeto e da base de dados: `npm run prod:up-full`;
 5. Rodar rodar os logs dos containers: `docker logs -f {nomeDoContainer ou  idContainer}`;
 6. Gerar files de migration: `NAME=<NomeDaMigration> npm run db:generate`;
 7. Visalizar porcentagem de cobertura e rodar os testes unitários: `npm run test:cov`
 8. __Rodar A aplicação localmente para DEBUG e DESENVOLVIMENTO__: 
+
+    a. Rode o comando `npm run dev:up-full` para subir o banco e rodar migrations em desenvolvimento
+
+    #### OU 
 
     a. Rode o comando para subir o container do banco (use --remove-orphans para limpar containers antigos): 
     ```
@@ -72,11 +76,6 @@ Projeto desenvolvido durante a mentoria do Fernando - F-O-L-K-S. Projeto se trat
     ```
       npx ts-node src/config/db/migrations.run.ts
     ```
-
-    e. Rode os seed
-
-  OU
-  a. Rode o comando `dev:up-full` para subir o banco de desenvolvimento e rodar migrations
 
 ## 💡 Dica rápida: 
 
