@@ -1,4 +1,4 @@
-import type { BookType } from "../../../../utils/types/searchTypes";
+import type { BookType } from '../../../../utils/types/searchTypes';
 
 export interface IApiGoogleBooksItem {
   id: string;

@@ -13,11 +13,22 @@ import { BooksRepository } from './repositories/books.repository';
 
 @Module({
   controllers: [BooksController],
-  providers: [ BooksService, GoogleBooksApiService, BooksMapper, GoogleBooksApiMapper, {
-    provide: BOOKS_REPOSITORY_INTERFACE,
-    useClass: BooksRepository
-  }],
-  exports: [BooksService, GoogleBooksApiService, BooksMapper, GoogleBooksApiMapper],
-  imports: [UtilsModule,HttpModule, TypeOrmModule.forFeature([BooksEntity])],
+  providers: [
+    BooksService,
+    GoogleBooksApiService,
+    BooksMapper,
+    GoogleBooksApiMapper,
+    {
+      provide: BOOKS_REPOSITORY_INTERFACE,
+      useClass: BooksRepository,
+    },
+  ],
+  exports: [
+    BooksService,
+    GoogleBooksApiService,
+    BooksMapper,
+    GoogleBooksApiMapper,
+  ],
+  imports: [UtilsModule, HttpModule, TypeOrmModule.forFeature([BooksEntity])],
 })
 export class BooksModule {}

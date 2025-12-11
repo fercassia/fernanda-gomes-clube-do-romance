@@ -12,7 +12,7 @@ import { SourceEnum } from '../enum/source.enum';
 import type { BookType } from 'src/utils/types/searchTypes';
 
 @Entity('books')
-@Index('idx_books_externalId_source',['externalId', 'source'])
+@Index('idx_books_externalId_source', ['externalId', 'source'])
 export class BooksEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,7 +26,13 @@ export class BooksEntity {
   })
   externalId: string;
 
-  @Column({ type: 'enum', enum: SourceEnum, default: SourceEnum.GOOGLE_BOOKS_API, nullable: false, name: 'source' })
+  @Column({
+    type: 'enum',
+    enum: SourceEnum,
+    default: SourceEnum.GOOGLE_BOOKS_API,
+    nullable: false,
+    name: 'source',
+  })
   source: SourceEnum;
 
   @Column({ type: 'varchar', name: 'title', length: 255, nullable: false })
@@ -44,7 +50,12 @@ export class BooksEntity {
   @Column({ type: 'varchar', length: 255, nullable: true, name: 'publisher' })
   publisher: string | null;
 
-  @Column({ type: 'varchar', length: 50, nullable: true, name: 'published_date' })
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    name: 'published_date',
+  })
   publishedDate: string | null;
 
   @Column({ type: 'int', nullable: true, name: 'page_count' })
@@ -60,12 +71,17 @@ export class BooksEntity {
   isbn10: string | null;
 
   @Column({ type: 'float', nullable: true, name: 'average_rating' })
-  averageRating: number| null;
+  averageRating: number | null;
 
   @Column({ type: 'int', nullable: true, name: 'ratings_count' })
   ratingsCount: number | null;
 
-  @Column({ type: 'varchar', length: 1500, nullable: true, name: 'description' })
+  @Column({
+    type: 'varchar',
+    length: 1500,
+    nullable: true,
+    name: 'description',
+  })
   description: string | null;
 
   @BeforeInsert()

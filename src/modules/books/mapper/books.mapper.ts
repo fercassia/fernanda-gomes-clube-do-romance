@@ -7,7 +7,6 @@ import { BooksResponseDto } from '../dto/booksResponse.dto';
 
 @Injectable()
 export class BooksMapper {
-  
   //Usado para quando buscar livros com esses parametros e converter para modelo interno
   toBooksSearchModel(dto: BooksSearchRequestDto): BooksSearchModel {
     return new BooksSearchModel(
@@ -64,7 +63,8 @@ export class BooksMapper {
 
   //Usado para pegar a entity do banco e converter para response dto - lista de livros salvos no banco
   toResponseBooks(entity: BooksEntity[]): BooksResponseDto[] {
-    return entity.map((book) =>
+    return entity.map(
+      (book) =>
         new BooksResponseDto(
           book.externalId,
           book.source,

@@ -7,7 +7,6 @@ export class NormalizeValueToQuery {
   constructor() {}
 
   async normalizeValue(value: string): Promise<string> {
-         
     const valueWithoutSpaceInTheEdges = value.trim();
     const noAccent = this.removeAccent(valueWithoutSpaceInTheEdges);
     const noSpace = this.removeSpace(noAccent);

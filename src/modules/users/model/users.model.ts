@@ -8,7 +8,7 @@ export class UsersModel {
     displayName: string,
     email: string,
     password: string,
-    role: number
+    role: number,
   ) {
     this._displayName = displayName;
     this._email = email;

@@ -1,11 +1,10 @@
-import { InternalServerErrorException, Logger } from "@nestjs/common";
-import { HealthService } from "../service/health.service";
-import { Test, TestingModule } from "@nestjs/testing";
-import { DataSource } from "typeorm";
-import { HealthMapper } from "../mapper/health.mapper";
+import { InternalServerErrorException, Logger } from '@nestjs/common';
+import { HealthService } from '../service/health.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { DataSource } from 'typeorm';
+import { HealthMapper } from '../mapper/health.mapper';
 
 describe('Health Service', () => {
-
   let service: HealthService;
 
   const mockDataSource = {
@@ -16,14 +15,13 @@ describe('Health Service', () => {
   afterAll(() => Logger.overrideLogger(true));
 
   beforeEach(async () => {
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         HealthService,
         {
           provide: DataSource,
           useValue: mockDataSource,
-        }
+        },
       ],
     }).compile();
 
@@ -39,13 +37,15 @@ describe('Health Service', () => {
     expect(service).toBeDefined();
   });
 
-//HEALTH TESTS START
+  //HEALTH TESTS START
 
   it('should throw Internal Server Error when query return empty array', async () => {
     mockDataSource.query.mockResolvedValueOnce([]);
     const mapper = jest.spyOn(HealthMapper, 'toResponse');
 
-    await expect(service.check()).rejects.toBeInstanceOf(InternalServerErrorException);
+    await expect(service.check()).rejects.toBeInstanceOf(
+      InternalServerErrorException,
+    );
     expect(mapper).not.toHaveBeenCalled();
   });
 
@@ -53,14 +53,21 @@ describe('Health Service', () => {
     mockDataSource.query.mockResolvedValueOnce(undefined);
     const mapper = jest.spyOn(HealthMapper, 'toResponse');
 
-    await expect(service.check()).rejects.toBeInstanceOf(InternalServerErrorException);
+    await expect(service.check()).rejects.toBeInstanceOf(
+      InternalServerErrorException,
+    );
     expect(mapper).not.toHaveBeenCalled();
   });
 
   it('should return ok when query returns valid data', async () => {
     mockDataSource.query.mockResolvedValueOnce([{ alive: '1' }]);
-    const mapper = jest.spyOn(HealthMapper, 'toResponse').mockReturnValueOnce({ message: 'Api is healthy' });
+    const mapper = jest
+      .spyOn(HealthMapper, 'toResponse')
+      .mockReturnValueOnce({ message: 'Api is healthy' });
 
-    await expect(service.check()).resolves.toEqual({ message: 'Api is healthy' });
-    expect(mapper).toHaveBeenCalledTimes(1);});
+    await expect(service.check()).resolves.toEqual({
+      message: 'Api is healthy',
+    });
+    expect(mapper).toHaveBeenCalledTimes(1);
+  });
 });

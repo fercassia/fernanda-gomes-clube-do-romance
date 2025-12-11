@@ -1,5 +1,4 @@
 export class DirEntitiesAndMigrations {
-
   private static getEnvironment(): string {
     return process.env.ENVIRONMENT ?? 'production';
   }

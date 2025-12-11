@@ -5,11 +5,14 @@ import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Module({
-  imports: [PassportModule, JwtModule.register({
-    secret: process.env.JWT_SECRET,
-    signOptions: { expiresIn: `${Number(process.env.JWT_TIME)}s`},
-  }), 
-  JwtModule],
+  imports: [
+    PassportModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: `${Number(process.env.JWT_TIME)}s` },
+    }),
+    JwtModule,
+  ],
   providers: [JwtStrategy, JwtAuthGuard],
   exports: [JwtModule, PassportModule, JwtAuthGuard],
 })

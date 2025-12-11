@@ -1,4 +1,4 @@
-import { IApiGoogleBooksItem } from "./iApiGoogleBooksItem";
+import { IApiGoogleBooksItem } from './iApiGoogleBooksItem';
 
 export interface IApiGoogleBooksResponse {
   items: IApiGoogleBooksItem[];

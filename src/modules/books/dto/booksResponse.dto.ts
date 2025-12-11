@@ -1,17 +1,17 @@
-import type { BookType } from "../../../utils/types/searchTypes";
-import { SourceEnum } from "../enum/source.enum";
-import { ApiProperty } from "@nestjs/swagger";
+import type { BookType } from '../../../utils/types/searchTypes';
+import { SourceEnum } from '../enum/source.enum';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class BooksResponseDto {
   @ApiProperty({
-    description: "External ID from the provider",
-    example: "zyTCAlFPjgYC",
+    description: 'External ID from the provider',
+    example: 'zyTCAlFPjgYC',
     readOnly: true,
   })
   public readonly _externalId: string;
 
   @ApiProperty({
-    description: "Data source/provider",
+    description: 'Data source/provider',
     enum: SourceEnum,
     example: SourceEnum.GOOGLE_BOOKS_API,
     readOnly: true,
@@ -19,80 +19,80 @@ export class BooksResponseDto {
   public readonly _source: SourceEnum;
 
   @ApiProperty({
-    description: "Book title",
-    example: "Pride and Prejudice",
+    description: 'Book title',
+    example: 'Pride and Prejudice',
     readOnly: true,
   })
   public readonly _title: string;
 
   @ApiProperty({
-    description: "List of authors",
-    example: ["Jane Austen"],
+    description: 'List of authors',
+    example: ['Jane Austen'],
     isArray: true,
     readOnly: true,
   })
   public readonly _authors: string[];
 
   @ApiProperty({
-    description: "Book type",
-    example: "book",
+    description: 'Book type',
+    example: 'book',
     readOnly: true,
   })
   public readonly _type: BookType | null;
 
   @ApiProperty({
-    description: "Link to the external API resource",
-    example: "https://www.googleapis.com/books/v1/volumes/zyTCAlFPjgYC",
+    description: 'Link to the external API resource',
+    example: 'https://www.googleapis.com/books/v1/volumes/zyTCAlFPjgYC',
     readOnly: true,
   })
   public readonly _selfLink: string | null;
 
   @ApiProperty({
-    description: "Publisher",
-    example: "Penguin Classics",
+    description: 'Publisher',
+    example: 'Penguin Classics',
     readOnly: true,
   })
   public readonly _publisher: string | null;
 
   @ApiProperty({
-    description: "Publication date (YYYY-MM-DD or YYYY)",
-    example: "2002-05-01",
+    description: 'Publication date (YYYY-MM-DD or YYYY)',
+    example: '2002-05-01',
     readOnly: true,
   })
   public readonly _publishedDate: string | null;
 
   @ApiProperty({
-    description: "Number of pages",
+    description: 'Number of pages',
     example: 432,
     readOnly: true,
   })
   public readonly _pageCount: number | null;
 
   @ApiProperty({
-    description: "Language (ISO 639-1 or 639-2)",
-    example: "en",
+    description: 'Language (ISO 639-1 or 639-2)',
+    example: 'en',
     readOnly: true,
   })
   public readonly _language: string | null;
 
   @ApiProperty({
-    description: "ISBN-13",
-    example: "9780141439518",
+    description: 'ISBN-13',
+    example: '9780141439518',
     nullable: true,
     readOnly: true,
   })
   public readonly _isbn13: string | null;
 
   @ApiProperty({
-    description: "ISBN-10",
-    example: "0141439513",
+    description: 'ISBN-10',
+    example: '0141439513',
     nullable: true,
     readOnly: true,
   })
   public readonly _isbn10: string | null;
 
   @ApiProperty({
-    description: "Average rating",
+    description: 'Average rating',
     example: 4.3,
     nullable: true,
     readOnly: true,
@@ -100,7 +100,7 @@ export class BooksResponseDto {
   public readonly _averageRating: number | null;
 
   @ApiProperty({
-    description: "Ratings count",
+    description: 'Ratings count',
     example: 1250,
     nullable: true,
     readOnly: true,
@@ -108,8 +108,8 @@ export class BooksResponseDto {
   public readonly _ratingsCount: number | null;
 
   @ApiProperty({
-    description: "Book description/synopsis",
-    example: "A classic of English literature...",
+    description: 'Book description/synopsis',
+    example: 'A classic of English literature...',
     nullable: true,
     readOnly: true,
   })

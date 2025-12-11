@@ -1,5 +1,8 @@
-import { DEFAULT_PAGE, DEFAULT_LIMIT_FILTER } from "../../../utils/constants/searchConstants";
-import type { BookType, FilterType } from "../../../utils/types/searchTypes";
+import {
+  DEFAULT_PAGE,
+  DEFAULT_LIMIT_FILTER,
+} from '../../../utils/constants/searchConstants';
+import type { BookType, FilterType } from '../../../utils/types/searchTypes';
 
 export class BooksSearchModel {
   private readonly _query: string | null;
@@ -25,7 +28,7 @@ export class BooksSearchModel {
   get query(): string | null {
     return this._query;
   }
-  
+
   get page(): number {
     return this._page;
   }

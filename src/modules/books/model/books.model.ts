@@ -1,5 +1,5 @@
-import type { BookType } from "../../../utils/types/searchTypes";
-import { SourceEnum } from "../enum/source.enum";
+import type { BookType } from '../../../utils/types/searchTypes';
+import { SourceEnum } from '../enum/source.enum';
 
 export class BooksModel {
   private readonly _id: string;
@@ -33,7 +33,7 @@ export class BooksModel {
     isbn10?: string | null,
     averageRating?: number | null,
     ratingsCount?: number | null,
-    description?: string | null
+    description?: string | null,
   ) {
     this._externalId = externalId;
     this._source = source;
@@ -52,19 +52,49 @@ export class BooksModel {
     this._description = description ?? null;
   }
 
-  get externalId(): string { return this._externalId; }
-  get source(): SourceEnum { return this._source; }
-  get title(): string { return this._title; }
-  get authors(): string[] { return this._authors; }
-  get type(): BookType | null { return this._type; }
-  get selfLink(): string | null { return this._selfLink; }
-  get publisher(): string | null{ return this._publisher; }
-  get publishedDate(): string | null { return this._publishedDate; }
-  get pageCount(): number | null { return this._pageCount; }
-  get language(): string | null { return this._language; }
-  get isbn13(): string | null { return this._isbn13; }
-  get isbn10(): string | null { return this._isbn10; }
-  get averageRating(): number | null { return this._averageRating; }
-  get ratingsCount(): number | null { return this._ratingsCount; }
-  get description(): string | null { return this._description; }
+  get externalId(): string {
+    return this._externalId;
+  }
+  get source(): SourceEnum {
+    return this._source;
+  }
+  get title(): string {
+    return this._title;
+  }
+  get authors(): string[] {
+    return this._authors;
+  }
+  get type(): BookType | null {
+    return this._type;
+  }
+  get selfLink(): string | null {
+    return this._selfLink;
+  }
+  get publisher(): string | null {
+    return this._publisher;
+  }
+  get publishedDate(): string | null {
+    return this._publishedDate;
+  }
+  get pageCount(): number | null {
+    return this._pageCount;
+  }
+  get language(): string | null {
+    return this._language;
+  }
+  get isbn13(): string | null {
+    return this._isbn13;
+  }
+  get isbn10(): string | null {
+    return this._isbn10;
+  }
+  get averageRating(): number | null {
+    return this._averageRating;
+  }
+  get ratingsCount(): number | null {
+    return this._ratingsCount;
+  }
+  get description(): string | null {
+    return this._description;
+  }
 }
