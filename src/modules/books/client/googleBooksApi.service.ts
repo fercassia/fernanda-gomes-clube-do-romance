@@ -41,9 +41,10 @@ export class GoogleBooksApiService {
   private removeBooksWithoutTitles(
     books: IApiGoogleBooksResponse,
   ): IApiGoogleBooksItem[] {
-    const filteredItems = books.items.filter(
-      (book) => !book.volumeInfo.title || book.volumeInfo.title !== '',
+    const removeBooksWithoutTitles = books.items.filter(
+      (book) =>
+        !!book?.volumeInfo?.title && book.volumeInfo.title.trim() !== '',
     );
-    return filteredItems;
+    return removeBooksWithoutTitles;
   }
 }
