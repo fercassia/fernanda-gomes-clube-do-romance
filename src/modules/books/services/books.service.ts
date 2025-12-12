@@ -126,10 +126,11 @@ export class BooksService {
       return await this.booksRepository.findBooksByIsbn(queryVerification);
     }
 
+    const offset = (query.page - 1) * query.limit;
     return await this.booksRepository.findBooksByQuery(
       queryVerification,
       query.type,
-      query.page,
+      offset,
       query.limit,
       query.filter,
     );

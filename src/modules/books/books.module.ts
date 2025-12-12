@@ -12,6 +12,7 @@ import { BOOKS_REPOSITORY_INTERFACE } from './interfaces/repository/iBooksReposi
 import { BooksRepository } from './repositories/books.repository';
 
 @Module({
+  imports: [UtilsModule, HttpModule, TypeOrmModule.forFeature([BooksEntity])],
   controllers: [BooksController],
   providers: [
     BooksService,
@@ -29,6 +30,5 @@ import { BooksRepository } from './repositories/books.repository';
     BooksMapper,
     GoogleBooksApiMapper,
   ],
-  imports: [UtilsModule, HttpModule, TypeOrmModule.forFeature([BooksEntity])],
 })
 export class BooksModule {}
