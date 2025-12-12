@@ -1,7 +1,7 @@
 import { BooksEntity } from '../entities/books.entity';
 import { IBooksRepositoryInterface } from '../interfaces/repository/iBooksRepository.interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import type { BookType, FilterType } from '../../../utils/types/searchTypes';
 
 export class BooksRepository implements IBooksRepositoryInterface {
@@ -16,7 +16,7 @@ export class BooksRepository implements IBooksRepositoryInterface {
   async findBooksByQuery(
     query: string,
     type: BookType,
-    page: number,
+    offset: number,
     limit: number,
     filter: FilterType,
   ): Promise<BooksEntity[] | null> {
@@ -27,11 +27,19 @@ export class BooksRepository implements IBooksRepositoryInterface {
       filter === 'ranking'
         ? 'COALESCE(book.average_rating, -1)'
         : `COALESCE(book.published_date, '')`;
-    const offset = (page - 1) * limit;
 
     const resultByTitle = await this.entity
       .createQueryBuilder('book')
-      .where('book.title ILIKE :query', { query: `%${query}%` })
+      .where(
+        new Brackets((qb) => {
+          qb.where('unaccent(book.title) ILIKE unaccent(:query)', {
+            query: `%${query}%`,
+          }).orWhere(
+            'EXISTS (SELECT 1 FROM unnest(COALESCE(book.authors, ARRAY[]::varchar[])) AS aut WHERE unaccent(aut) ILIKE unaccent(:query))',
+            { query: `%${query}%` },
+          );
+        }),
+      )
       .andWhere('LOWER(book.type) = LOWER(:type)', { type: type })
       .orderBy(orderFilter, 'DESC')
       .addOrderBy('book.created_at', 'DESC')
@@ -41,22 +49,6 @@ export class BooksRepository implements IBooksRepositoryInterface {
       .getMany();
     if (resultByTitle.length > 0) {
       return resultByTitle;
-    }
-    const resultByAuthor = await this.entity
-      .createQueryBuilder('book')
-      .where(
-        'EXISTS (SELECT 1 FROM unnest(COALESCE(book.authors, ARRAY[]::varchar[])) AS aut WHERE aut ILIKE :query)',
-        { query: `%${query}%` },
-      )
-      .andWhere('LOWER(book.type) = LOWER(:type)', { type: type })
-      .orderBy(orderFilter, 'DESC')
-      .addOrderBy('book.created_at', 'DESC')
-      .addOrderBy('book.title', 'ASC')
-      .skip(offset)
-      .take(limit)
-      .getMany();
-    if (resultByAuthor.length > 0) {
-      return resultByAuthor;
     }
     return null;
   }
