@@ -2,6 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsInt,
+  IsIn,
   IsOptional,
   IsPositive,
   IsString,
@@ -37,10 +38,12 @@ export class BooksSearchRequestDto {
   @ApiPropertyOptional({ description: 'Filter (opcional)', example: 'newest' })
   @IsOptional()
   @IsString()
+  @IsIn(['newest', 'ranking'])
   filter: FilterType;
 
   @ApiPropertyOptional({ description: 'Type (opcional)', example: 'book' })
   @IsOptional()
   @IsString()
+  @IsIn(['magazine', 'book'])
   type: BookType;
 }
