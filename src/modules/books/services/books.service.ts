@@ -39,12 +39,13 @@ export class BooksService {
 
     const booksFound: BooksEntity[] | null =
       await this.verifyExistenceBooks(query);
+
     if (booksFound === null) {
       //Faz chamadas para API externa e salva novos livros;
       const returnGoogle: GoogleBooksApiResponseDto =
         await this.callExternalApi(query.query);
       const newBooksSaved: BooksEntity[] =
-        await this.booksAndNewBooksSavedFromGoogleBooks(returnGoogle);
+        await this.saveGoogleBooks(returnGoogle);
       if (newBooksSaved.length === 0) {
         return [];
       }
@@ -69,7 +70,7 @@ export class BooksService {
     return returnGoogle;
   }
 
-  private async booksAndNewBooksSavedFromGoogleBooks(
+  private async saveGoogleBooks(
     newBooks: GoogleBooksApiResponseDto,
   ): Promise<BooksEntity[]> {
     if (newBooks.items.length === 0) {
@@ -79,6 +80,7 @@ export class BooksService {
     const booksModels = newBooks.items.map((book) => {
       return this.booksMapper.toModelBook(book);
     });
+
     const books = await this.filterBooksDifference(booksModels);
     if (books === null) {
       return [];
