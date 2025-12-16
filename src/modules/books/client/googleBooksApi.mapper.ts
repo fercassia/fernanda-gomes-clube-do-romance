@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { GoogleBooksApiResponseDto } from './googleBooksApiResponse.dto';
 import { BooksResponseDto } from '../dto/booksResponse.dto';
-import { IApiGoogleBooksResponse } from './interfaces/iApiGoogleBooksResponse ';
 import { IApiGoogleBooksItem } from './interfaces/iApiGoogleBooksItem';
 import { SourceEnum } from '../enum/source.enum';
 

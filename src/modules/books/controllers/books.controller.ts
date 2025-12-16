@@ -3,7 +3,6 @@ import { BooksService } from '../services/books.service';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiBody,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,

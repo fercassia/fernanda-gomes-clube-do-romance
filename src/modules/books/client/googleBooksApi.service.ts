@@ -3,7 +3,6 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { GoogleBooksApiResponseDto } from './googleBooksApiResponse.dto';
 import { GoogleBooksApiMapper } from './googleBooksApi.mapper';
-import { BooksResponseDto } from '../dto/booksResponse.dto';
 import { IApiGoogleBooksResponse } from './interfaces/iApiGoogleBooksResponse ';
 import { IApiGoogleBooksItem } from './interfaces/iApiGoogleBooksItem';
 

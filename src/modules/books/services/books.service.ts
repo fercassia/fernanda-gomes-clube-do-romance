@@ -15,7 +15,6 @@ import {
 import { BooksEntity } from '../entities/books.entity';
 import { BooksMapper } from '../mapper/books.mapper';
 import { BooksModel } from '../model/books.model';
-import { ApiUriTooLongResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class BooksService {
@@ -101,6 +100,7 @@ export class BooksService {
     const existBooks = await this.booksRepository.findBooksExternalIdAndSource(
       filterExternalIdAndSource,
     );
+    
     if (existBooks === null) {
       return booksExternal;
     }
@@ -112,6 +112,7 @@ export class BooksService {
           existBook.source === book.source,
       );
     });
+
     if (booksDifference.length === 0) {
       return null;
     }
