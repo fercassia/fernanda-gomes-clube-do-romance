@@ -6,13 +6,19 @@ import { AuthController } from './controllers/auth.controller';
 import { UsersModule } from '../users/users.module';
 import { AuthService } from './services/auth.service';
 import { AuthJwtModule } from '../../config/auth/auth-jwt.module';
-import { CacheLoginAttemptModule } from '../../config/cache/cache-login-attempt.module';
+import { CacheLoginAttemptModule } from '../../config/cache/attempts/cache-login-attempt.module';
 import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
-  imports: [ AuthJwtModule, UsersModule, UtilsModule, CacheLoginAttemptModule, CacheModule.register()],
+  imports: [
+    AuthJwtModule,
+    UsersModule,
+    UtilsModule,
+    CacheLoginAttemptModule,
+    CacheModule.register(),
+  ],
   controllers: [AuthController],
-  providers: [ AuthService, LoginUsersMapper, LoginUsersModel],
-  exports: [  AuthService, LoginUsersMapper, LoginUsersModel],
+  providers: [AuthService, LoginUsersMapper, LoginUsersModel],
+  exports: [AuthService, LoginUsersMapper, LoginUsersModel],
 })
 export class AuthModule {}

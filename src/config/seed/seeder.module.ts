@@ -5,8 +5,9 @@ import { SeederService } from './seeder.service';
 import { UsersRolesSeed } from './seeds/usersRoles.seed';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RolesEntity]),
-  // Demais entidades aqui
+  imports: [
+    TypeOrmModule.forFeature([RolesEntity]),
+    // Demais entidades aqui
   ],
   providers: [SeederService, UsersRolesSeed],
 })

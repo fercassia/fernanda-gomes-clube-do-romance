@@ -1,5 +1,4 @@
 export class DirEntitiesAndMigrations {
-
   private static getEnvironment(): string {
     return process.env.ENVIRONMENT ?? 'production';
   }
@@ -9,15 +8,15 @@ export class DirEntitiesAndMigrations {
 
   static whichDirEntities(): string {
     if (this.isProduction()) {
-      return 'dist/modules/**/entities/*.js';
+      return 'dist/modules/**/entities/*.{js}';
     }
-    return 'src/modules/**/entities/*{.ts,.js}';
+    return 'src/modules/**/entities/*.{ts,js}';
   }
 
   static whichDirMigrations(): string {
     if (this.isProduction()) {
-      return 'dist/config/db/migrations/*.js';
+      return 'dist/config/db/migrations/*.{js}';
     }
-    return 'src/config/db/migrations/*{.ts,.js}';
+    return 'src/config/db/migrations/*.{ts,js}';
   }
 }

@@ -1,5 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, InternalServerErrorException, Logger, ValidationPipe } from '@nestjs/common';
+import {
+  HttpStatus,
+  INestApplication,
+  InternalServerErrorException,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import request from 'supertest';
 import { HealthController } from '../controller/health.controller';
 import { HealthService } from '../service/health.service';
@@ -12,9 +18,9 @@ describe('HealthController - get health', () => {
 
   const BASE_URL: string = '/api/v1/health';
 
-const mockHealthService = {
-  check: jest.fn().mockResolvedValue({ message: 'Ok' }),
-};
+  const mockHealthService = {
+    check: jest.fn().mockResolvedValue({ message: 'Ok' }),
+  };
 
   beforeAll(() => Logger.overrideLogger(false));
   afterAll(() => Logger.overrideLogger(true));
@@ -27,7 +33,9 @@ const mockHealthService = {
 
     controller = module.get<HealthController>(HealthController);
     app = module.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     await app.init();
   });
 
@@ -47,23 +55,27 @@ const mockHealthService = {
     const response = await request(app.getHttpServer())
       .get(`${BASE_URL}`)
       .expect(HttpStatus.OK);
-    
+
     expect(response.body).toMatchObject({
       message: 'Ok',
     });
-  })
+  });
 
-  it('should return 500 when API is down', async () => { 
-    mockHealthService.check = jest.fn().mockRejectedValue(new InternalServerErrorException('Api is not healthy'));
-    
+  it('should return 500 when API is down', async () => {
+    mockHealthService.check = jest
+      .fn()
+      .mockRejectedValue(
+        new InternalServerErrorException('Api is not healthy'),
+      );
+
     const response = await request(app.getHttpServer())
       .get(`${BASE_URL}`)
       .expect(HttpStatus.INTERNAL_SERVER_ERROR);
-    
+
     expect(response.body).toMatchObject({
       message: 'Api is not healthy',
     });
-  })
+  });
 
   //FIM CONTROLLER HEALTH
-})
+});

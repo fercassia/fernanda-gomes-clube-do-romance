@@ -9,9 +9,7 @@ export class ValidationErrorDto {
   message: string;
 
   @ApiProperty({
-    example: [
-      { property: 'email', errorMessage: 'email must be an email' },
-    ]
+    example: [{ property: 'email', errorMessage: 'email must be an email' }],
   })
   errors?: { property: string; errorMessage: string }[];
 }

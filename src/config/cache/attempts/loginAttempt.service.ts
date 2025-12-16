@@ -1,7 +1,7 @@
-import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { Inject, Injectable } from "@nestjs/common";
-import type { Cache } from "cache-manager";
-import { CACHE_KEYS } from "../../shared/constants/cacheKeys";
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable } from '@nestjs/common';
+import type { Cache } from 'cache-manager';
+import { CACHE_KEYS } from '../../../shared/constants/cacheKeys';
 
 @Injectable()
 export class LoginAttemptService {
@@ -21,9 +21,9 @@ export class LoginAttemptService {
   async getTtl(ip: string): Promise<number> {
     const time = (await this.cacheManager.ttl(this.getCacheKey(ip))) ?? 0;
 
-    if(time < 0){
+    if (time < 0) {
       return 0;
-    } 
+    }
     return time;
   }
 
@@ -32,10 +32,18 @@ export class LoginAttemptService {
       return ttl;
     }
     const value = ttl - this.TIME_NOW;
-    return Math.floor((value / 1000) / 60);
+    return Math.floor(value / 1000 / 60);
   }
 
-  async incrementAttempts(ip: string, maxAttempts: number): Promise<{ attempts: number, remaining: number, isBlocked: boolean , retryAfterMinutes?: number }> {
+  async incrementAttempts(
+    ip: string,
+    maxAttempts: number,
+  ): Promise<{
+    attempts: number;
+    remaining: number;
+    isBlocked: boolean;
+    retryAfterMinutes?: number;
+  }> {
     const currentAttempts = await this.getAttempts(ip);
     const attempts = currentAttempts + 1;
 
@@ -43,7 +51,12 @@ export class LoginAttemptService {
       this.TIME_NOW = new Date().getTime();
       await this.cacheManager.set(this.getCacheKey(ip), attempts);
       const ttlConverted = this.convertTtlToMinutes(await this.getTtl(ip));
-      return { attempts, remaining: 0, isBlocked: true, retryAfterMinutes: ttlConverted  };
+      return {
+        attempts,
+        remaining: 0,
+        isBlocked: true,
+        retryAfterMinutes: ttlConverted,
+      };
     }
     await this.cacheManager.set(this.getCacheKey(ip), attempts);
     const remaining = maxAttempts - attempts;

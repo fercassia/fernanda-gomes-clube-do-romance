@@ -9,7 +9,6 @@ import { PasswordHasherd } from '../../../utils/passwordHashed';
 import { UsersEntity } from '../entities/users.entity';
 
 describe('UsersService', () => {
-
   let service: UsersService;
 
   const mockUsersRepository = {
@@ -20,15 +19,14 @@ describe('UsersService', () => {
   };
 
   const passwordHasherMock = {
-      hash: jest.fn().mockResolvedValue('hashedPassword'),
-      verify: jest.fn().mockResolvedValue(true),
+    hash: jest.fn().mockResolvedValue('hashedPassword'),
+    verify: jest.fn().mockResolvedValue(true),
   };
 
   beforeAll(() => Logger.overrideLogger(false));
   afterAll(() => Logger.overrideLogger(true));
 
   beforeEach(async () => {
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -37,9 +35,9 @@ describe('UsersService', () => {
           useValue: mockUsersRepository,
         },
         {
-         provide: PasswordHasherd,
-         useValue: passwordHasherMock,
-       },
+          provide: PasswordHasherd,
+          useValue: passwordHasherMock,
+        },
       ],
     }).compile();
 
@@ -55,7 +53,7 @@ describe('UsersService', () => {
     expect(service).toBeDefined();
   });
 
-//USER CREATION TESTS START
+  //USER CREATION TESTS START
 
   it('should throw ConflictException if email already exists', async () => {
     const dtoCreateUser1: CreateUsersRequestDto = {
@@ -70,7 +68,9 @@ describe('UsersService', () => {
       displayName: 'bananaUser',
       password: 'hashedPassword',
     });
-    await expect(service.create(CreateUsersMapper.toModel(dtoCreateUser1))).rejects.toThrow(ConflictException);
+    await expect(
+      service.create(CreateUsersMapper.toModel(dtoCreateUser1)),
+    ).rejects.toThrow(ConflictException);
     expect(mockUsersRepository.create).not.toHaveBeenCalled();
   });
 
@@ -83,11 +83,13 @@ describe('UsersService', () => {
 
     mockUsersRepository.findByEmailOrDisplayName.mockResolvedValueOnce({
       id: 'existingUserId',
-      email: 'testoutro@example.com' ,
+      email: 'testoutro@example.com',
       displayName: dtoCreateUser1.displayName,
       password: 'hashedPassword',
     });
-    await expect(service.create(CreateUsersMapper.toModel(dtoCreateUser1))).rejects.toThrow(ConflictException);
+    await expect(
+      service.create(CreateUsersMapper.toModel(dtoCreateUser1)),
+    ).rejects.toThrow(ConflictException);
     expect(mockUsersRepository.create).not.toHaveBeenCalled();
   });
 
@@ -103,11 +105,13 @@ describe('UsersService', () => {
       ...dtoCreateUser1,
       password: senha,
     };
-    const userModel: UsersModel = CreateUsersMapper.toModel(dtoNovoUserComSenhaHash);
+    const userModel: UsersModel = CreateUsersMapper.toModel(
+      dtoNovoUserComSenhaHash,
+    );
 
     mockUsersRepository.findByEmailOrDisplayName.mockResolvedValueOnce(null);
 
-    const dateCreated = new Date(); 
+    const dateCreated = new Date();
     const createUserEntity = {
       id: 'newUserId',
       displayName: userModel.displayName,
@@ -116,7 +120,7 @@ describe('UsersService', () => {
       password: userModel.password,
       createdAt: dateCreated,
       updatedAt: dateCreated,
-      isActive: false
+      isActive: false,
     } as UsersEntity;
 
     mockUsersRepository.create.mockResolvedValueOnce(createUserEntity);
@@ -128,15 +132,22 @@ describe('UsersService', () => {
       createdAt: dateCreated.toString(),
     });
 
-    expect(passwordHasherMock.hash).toHaveBeenCalledWith(dtoCreateUser1.password);
-    expect(mockUsersRepository.findByEmailOrDisplayName).toHaveBeenCalledWith(userModel.displayName, userModel.email);
-    expect(mockUsersRepository.create).toHaveBeenCalledWith(expect.objectContaining({
+    expect(passwordHasherMock.hash).toHaveBeenCalledWith(
+      dtoCreateUser1.password,
+    );
+    expect(mockUsersRepository.findByEmailOrDisplayName).toHaveBeenCalledWith(
+      userModel.displayName,
+      userModel.email,
+    );
+    expect(mockUsersRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({
         displayName: userModel.displayName,
         email: userModel.email,
         role: { id: 1 },
         password: userModel.password,
-    }));
+      }),
+    );
   });
 
-//USER CREATION TESTS END
+  //USER CREATION TESTS END
 });

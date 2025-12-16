@@ -13,14 +13,22 @@ import { UtilsModule } from '../../utils/utils.module';
 @Module({
   imports: [TypeOrmModule.forFeature([UsersEntity, RolesEntity]), UtilsModule],
   controllers: [UsersController],
-  providers: [UsersService, CreateUsersMapper, UsersModel, {
-    provide: USERS_REPOSITORY_INTERFACE,
-    useClass: UsersRepository
+  providers: [
+    UsersService,
+    CreateUsersMapper,
+    UsersModel,
+    {
+      provide: USERS_REPOSITORY_INTERFACE,
+      useClass: UsersRepository,
     },
   ],
-  exports: [UsersService, CreateUsersMapper, UsersModel,{
-    provide: USERS_REPOSITORY_INTERFACE,
-    useClass: UsersRepository
+  exports: [
+    UsersService,
+    CreateUsersMapper,
+    UsersModel,
+    {
+      provide: USERS_REPOSITORY_INTERFACE,
+      useClass: UsersRepository,
     },
   ],
 })

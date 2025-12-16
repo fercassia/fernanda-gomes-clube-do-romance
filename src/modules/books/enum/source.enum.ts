@@ -1,0 +1,4 @@
+export enum SourceEnum {
+  GOOGLE_BOOKS_API = 'GOOGLE_BOOKS_API',
+  OPEN_LIBRARY_API = 'OPEN_LIBRARY_API',
+}
